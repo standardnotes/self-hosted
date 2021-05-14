@@ -28,7 +28,7 @@ Your MySQL Data will be written to your local disk in the `data` folder to keep 
 ./server.sh start
 ```
 
-Your server should now be available under `http://localhost`. You can see it is running by opening [http://localhost/healthcheck](http://localhost/healthcheck). If you specified a different port than 80 as the `EXPOSED_PORT` in the `.env` file then your server is available under `http://localhost:${EXPOSED_PORT}`.
+Your server should now be available under `http://localhost:3000`. You can see it is running by opening [http://localhost:3000/healthcheck](http://localhost:3000/healthcheck). If you specified a different port than 3000 as the `EXPOSED_PORT` in the `.env` file then your server is available under `http://localhost:{EXPOSED_PORT}`.
 
 ### Logs
 
