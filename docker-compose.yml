@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   syncing-server-js:
-    image: standardnotes/syncing-server-js:1.26.11
+    image: standardnotes/syncing-server-js:1.27.0
     entrypoint: [
       "./wait-for.sh", "db", "3306",
       "./wait-for.sh", "cache", "6379",
@@ -17,7 +17,7 @@ services:
       - standardnotes_standalone
 
   syncing-server-js-worker:
-    image: standardnotes/syncing-server-js:1.26.11
+    image: standardnotes/syncing-server-js:1.27.0
     entrypoint: [
       "./wait-for.sh", "db", "3306",
       "./wait-for.sh", "cache", "6379",
@@ -44,7 +44,7 @@ services:
       - standardnotes_standalone
 
   auth:
-    image: standardnotes/auth:1.6.4
+    image: standardnotes/auth:1.7.1
     entrypoint: [
       "./wait-for.sh", "db", "3306",
       "./wait-for.sh", "cache", "6379",
@@ -74,7 +74,7 @@ services:
       - standardnotes_standalone
 
   auth-worker:
-    image: standardnotes/auth:1.6.4
+    image: standardnotes/auth:1.7.1
     entrypoint: [
       "./wait-for.sh", "db", "3306",
       "./wait-for.sh", "cache", "6379",
