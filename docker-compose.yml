@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   syncing-server-js:
-    image: standardnotes/syncing-server-js:1.27.0
+    image: standardnotes/syncing-server-js:1.27.1
     entrypoint: [
       "./wait-for.sh", "db", "3306",
       "./wait-for.sh", "cache", "6379",
@@ -15,7 +15,7 @@ services:
       - standardnotes_standalone
 
   syncing-server-js-worker:
-    image: standardnotes/syncing-server-js:1.27.0
+    image: standardnotes/syncing-server-js:1.27.1
     entrypoint: [
       "./wait-for.sh", "db", "3306",
       "./wait-for.sh", "cache", "6379",
@@ -23,6 +23,8 @@ services:
        "./docker/entrypoint.sh", "start-worker"
     ]
     env_file: .env
+    environment:
+      PORT: 3000
     restart: unless-stopped
     networks:
       - standardnotes_standalone
@@ -53,6 +55,7 @@ services:
     ]
     env_file: docker/auth.env
     environment:
+      PORT: 3000
       DB_HOST: '${DB_HOST}'
       DB_REPLICA_HOST: '${DB_REPLICA_HOST}'
       DB_PORT: '${DB_PORT}'
@@ -64,7 +67,6 @@ services:
       REDIS_URL: '${REDIS_URL}'
       JWT_SECRET: '${JWT_SECRET}'
       AUTH_JWT_SECRET: '${AUTH_JWT_SECRET}'
-      PSEUDO_KEY_PARAMS_KEY: '${PSEUDO_KEY_PARAMS_KEY}'
       ACCESS_TOKEN_AGE: '${ACCESS_TOKEN_AGE}'
       REFRESH_TOKEN_AGE: '${REFRESH_TOKEN_AGE}'
       EPHEMERAL_SESSION_AGE: '${EPHEMERAL_SESSION_AGE}'
@@ -83,6 +85,7 @@ services:
     ]
     env_file: docker/auth.env
     environment:
+      PORT: 3000
       DB_HOST: '${DB_HOST}'
       DB_REPLICA_HOST: '${DB_REPLICA_HOST}'
       DB_PORT: '${DB_PORT}'
@@ -94,7 +97,6 @@ services:
       REDIS_URL: '${REDIS_URL}'
       JWT_SECRET: '${JWT_SECRET}'
       AUTH_JWT_SECRET: '${AUTH_JWT_SECRET}'
-      PSEUDO_KEY_PARAMS_KEY: '${PSEUDO_KEY_PARAMS_KEY}'
       ACCESS_TOKEN_AGE: '${ACCESS_TOKEN_AGE}'
       REFRESH_TOKEN_AGE: '${REFRESH_TOKEN_AGE}'
       EPHEMERAL_SESSION_AGE: '${EPHEMERAL_SESSION_AGE}'
