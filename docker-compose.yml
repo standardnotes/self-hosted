@@ -11,8 +11,6 @@ services:
     environment:
       PORT: 3000
     restart: unless-stopped
-    ports:
-      - ${EXPOSED_PORT}:3000
     networks:
       - standardnotes_standalone
 
@@ -30,8 +28,10 @@ services:
       - standardnotes_standalone
 
   api-gateway:
-    image: standardnotes/api-gateway:1.4.4
+    image: standardnotes/api-gateway:1.5.1
     env_file: docker/api-gateway.env
+    ports:
+      - ${EXPOSED_PORT}:3000
     environment:
       PORT: 3000
       AUTH_JWT_SECRET: '${AUTH_JWT_SECRET}'
@@ -44,7 +44,7 @@ services:
       - standardnotes_standalone
 
   auth:
-    image: standardnotes/auth:1.7.1
+    image: standardnotes/auth:1.7.3
     entrypoint: [
       "./wait-for.sh", "db", "3306",
       "./wait-for.sh", "cache", "6379",
@@ -74,7 +74,7 @@ services:
       - standardnotes_standalone
 
   auth-worker:
-    image: standardnotes/auth:1.7.1
+    image: standardnotes/auth:1.7.3
     entrypoint: [
       "./wait-for.sh", "db", "3306",
       "./wait-for.sh", "cache", "6379",
