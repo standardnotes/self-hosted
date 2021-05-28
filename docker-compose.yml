@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   syncing-server-js:
-    image: standardnotes/syncing-server-js:1.27.1
+    image: standardnotes/syncing-server-js:1.27.4
     entrypoint: [
       "./wait-for.sh", "db", "3306",
       "./wait-for.sh", "cache", "6379",
@@ -15,7 +15,7 @@ services:
       - standardnotes_standalone
 
   syncing-server-js-worker:
-    image: standardnotes/syncing-server-js:1.27.1
+    image: standardnotes/syncing-server-js:1.27.4
     entrypoint: [
       "./wait-for.sh", "db", "3306",
       "./wait-for.sh", "cache", "6379",
@@ -30,7 +30,7 @@ services:
       - standardnotes_standalone
 
   api-gateway:
-    image: standardnotes/api-gateway:1.5.1
+    image: standardnotes/api-gateway:1.6.0
     env_file: docker/api-gateway.env
     ports:
       - ${EXPOSED_PORT}:3000
@@ -46,7 +46,7 @@ services:
       - standardnotes_standalone
 
   auth:
-    image: standardnotes/auth:1.7.3
+    image: standardnotes/auth:1.7.5
     entrypoint: [
       "./wait-for.sh", "db", "3306",
       "./wait-for.sh", "cache", "6379",
@@ -76,7 +76,7 @@ services:
       - standardnotes_standalone
 
   auth-worker:
-    image: standardnotes/auth:1.7.3
+    image: standardnotes/auth:1.7.5
     entrypoint: [
       "./wait-for.sh", "db", "3306",
       "./wait-for.sh", "cache", "6379",
