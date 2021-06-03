@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   syncing-server-js:
-    image: standardnotes/syncing-server-js:1.33.2
+    image: standardnotes/syncing-server-js:1.34.0
     depends_on:
       - db
       - cache
@@ -18,7 +18,7 @@ services:
       - standardnotes_standalone
 
   syncing-server-js-worker:
-    image: standardnotes/syncing-server-js:1.33.2
+    image: standardnotes/syncing-server-js:1.34.0
     depends_on:
       - db
       - cache
@@ -37,7 +37,7 @@ services:
       - standardnotes_standalone
 
   api-gateway:
-    image: standardnotes/api-gateway:1.13.0
+    image: standardnotes/api-gateway:1.14.0
     depends_on:
       - auth
       - syncing-server-js
@@ -79,9 +79,7 @@ services:
       DB_DEBUG_LEVEL: '${DB_DEBUG_LEVEL}'
       DB_MIGRATIONS_PATH: '${DB_MIGRATIONS_PATH}'
       REDIS_URL: '${REDIS_URL}'
-      JWT_SECRET: '${JWT_SECRET}'
       AUTH_JWT_SECRET: '${AUTH_JWT_SECRET}'
-      EPHEMERAL_SESSION_AGE: '${EPHEMERAL_SESSION_AGE}'
     networks:
       - standardnotes_standalone
 
@@ -109,9 +107,7 @@ services:
       DB_DEBUG_LEVEL: '${DB_DEBUG_LEVEL}'
       DB_MIGRATIONS_PATH: '${DB_MIGRATIONS_PATH}'
       REDIS_URL: '${REDIS_URL}'
-      JWT_SECRET: '${JWT_SECRET}'
       AUTH_JWT_SECRET: '${AUTH_JWT_SECRET}'
-      EPHEMERAL_SESSION_AGE: '${EPHEMERAL_SESSION_AGE}'
     networks:
       - standardnotes_standalone
 
