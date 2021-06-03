@@ -56,7 +56,7 @@ services:
       - standardnotes_standalone
 
   auth:
-    image: standardnotes/auth:1.8.0
+    image: standardnotes/auth:1.8.1
     depends_on:
       - db
       - cache
@@ -84,7 +84,7 @@ services:
       - standardnotes_standalone
 
   auth-worker:
-    image: standardnotes/auth:1.8.0
+    image: standardnotes/auth:1.8.1
     depends_on:
       - db
       - cache
