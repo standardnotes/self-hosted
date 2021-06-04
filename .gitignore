@@ -3,6 +3,7 @@
 # MySQL & Redis data
 data/mysql
 data/redis
+data/import/*.sql
 
 # Ignore ENV variables config
 .env

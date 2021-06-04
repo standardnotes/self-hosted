@@ -80,7 +80,8 @@ case "$COMMAND" in
     case "$choice" in
       y|Y )
         docker-compose kill && docker-compose rm -fv
-        rm -rf data/*
+        rm -rf data/mysql
+        rm -rf data/redis
         echo "Cleanup performed. You can start your server with a clean environment."
         ;;
       n|N )

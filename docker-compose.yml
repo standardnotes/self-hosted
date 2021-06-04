@@ -56,7 +56,7 @@ services:
       - standardnotes_standalone
 
   auth:
-    image: standardnotes/auth:1.8.2
+    image: standardnotes/auth:1.8.5
     depends_on:
       - db
       - cache
@@ -84,7 +84,7 @@ services:
       - standardnotes_standalone
 
   auth-worker:
-    image: standardnotes/auth:1.8.2
+    image: standardnotes/auth:1.8.5
     depends_on:
       - db
       - cache
@@ -124,6 +124,7 @@ services:
     command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8 --collation-server=utf8_general_ci
     volumes:
       - ./data/mysql:/var/lib/mysql
+      - ./data/import:/docker-entrypoint-initdb.d
     networks:
       - standardnotes_standalone
 
