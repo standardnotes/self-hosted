@@ -37,7 +37,7 @@ services:
       - standardnotes_standalone
 
   api-gateway:
-    image: standardnotes/api-gateway:1.14.0
+    image: standardnotes/api-gateway:1.15.0
     depends_on:
       - auth
       - syncing-server-js
