@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   syncing-server-js:
-    image: standardnotes/syncing-server-js:1.35.1
+    image: standardnotes/syncing-server-js:1.35.2
     depends_on:
       - db
       - cache
@@ -18,7 +18,7 @@ services:
       - standardnotes_standalone
 
   syncing-server-js-worker:
-    image: standardnotes/syncing-server-js:1.35.1
+    image: standardnotes/syncing-server-js:1.35.2
     depends_on:
       - db
       - cache
@@ -37,7 +37,7 @@ services:
       - standardnotes_standalone
 
   api-gateway:
-    image: standardnotes/api-gateway:1.19.0
+    image: standardnotes/api-gateway:1.20.0
     depends_on:
       - auth
       - syncing-server-js
