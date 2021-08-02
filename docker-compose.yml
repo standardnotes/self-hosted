@@ -2,6 +2,7 @@ version: '3.8'
 services:
   syncing-server-js:
     image: standardnotes/syncing-server-js:1.37.2
+    container_name: syncing-server-js
     depends_on:
       - db
       - cache
@@ -19,6 +20,7 @@ services:
 
   syncing-server-js-worker:
     image: standardnotes/syncing-server-js:1.37.2
+    container_name: syncing-server-js-worker
     depends_on:
       - db
       - cache
@@ -38,6 +40,7 @@ services:
 
   api-gateway:
     image: standardnotes/api-gateway:1.21.3
+    container_name: api-gateway
     depends_on:
       - auth
       - syncing-server-js
@@ -57,6 +60,7 @@ services:
 
   auth:
     image: standardnotes/auth:1.15.0
+    container_name: auth
     depends_on:
       - db
       - cache
@@ -85,6 +89,7 @@ services:
 
   auth-worker:
     image: standardnotes/auth:1.15.0
+    container_name: auth-worker
     depends_on:
       - db
       - cache
@@ -113,6 +118,7 @@ services:
 
   db:
     image: mysql:5.6
+    container_name: db
     environment:
       MYSQL_DATABASE: '${DB_DATABASE}'
       MYSQL_USER: '${DB_USERNAME}'
@@ -130,6 +136,7 @@ services:
 
   cache:
     image: redis:6.0-alpine
+    container_name: cache
     volumes:
       - ./data/redis/:/data
     expose:
