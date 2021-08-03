@@ -55,6 +55,7 @@ services:
       "./wait-for.sh", "syncing-server-js", "3000",
       "./docker/entrypoint.sh", "start-web"
     ]
+    restart: unless-stopped
     networks:
       - standardnotes_standalone
 
@@ -84,6 +85,7 @@ services:
       DB_MIGRATIONS_PATH: '${DB_MIGRATIONS_PATH}'
       REDIS_URL: '${REDIS_URL}'
       AUTH_JWT_SECRET: '${AUTH_JWT_SECRET}'
+    restart: unless-stopped
     networks:
       - standardnotes_standalone
 
@@ -113,6 +115,7 @@ services:
       DB_MIGRATIONS_PATH: '${DB_MIGRATIONS_PATH}'
       REDIS_URL: '${REDIS_URL}'
       AUTH_JWT_SECRET: '${AUTH_JWT_SECRET}'
+    restart: unless-stopped
     networks:
       - standardnotes_standalone
 
@@ -141,6 +144,7 @@ services:
       - ./data/redis/:/data
     expose:
       - 6379
+    restart: unless-stopped
     networks:
       - standardnotes_standalone
 
