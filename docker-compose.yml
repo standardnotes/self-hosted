@@ -60,7 +60,7 @@ services:
       - standardnotes_standalone
 
   auth:
-    image: standardnotes/auth:1.19.0
+    image: standardnotes/auth:1.19.1
     container_name: auth
     depends_on:
       - db
@@ -90,7 +90,7 @@ services:
       - standardnotes_standalone
 
   auth-worker:
-    image: standardnotes/auth:1.19.0
+    image: standardnotes/auth:1.19.1
     container_name: auth-worker
     depends_on:
       - db
