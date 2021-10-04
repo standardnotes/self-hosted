@@ -74,6 +74,9 @@ case "$COMMAND" in
     docker-compose kill
     echo "Services stopped"
     ;;
+  'version' )
+    docker-compose images
+    ;;
   'cleanup' )
     echo "WARNING: This will permanently delete all of you data! Are you sure?"
     read -p "Continue (y/n)?" choice
