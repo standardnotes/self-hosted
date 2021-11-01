@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   syncing-server-js:
-    image: standardnotes/syncing-server-js:1.42.6
+    image: standardnotes/syncing-server-js:1.42.7
     container_name: syncing-server-js-standalone
     depends_on:
       - db
@@ -19,7 +19,7 @@ services:
       - standardnotes_standalone
 
   syncing-server-js-worker:
-    image: standardnotes/syncing-server-js:1.42.6
+    image: standardnotes/syncing-server-js:1.42.7
     container_name: syncing-server-js-worker-standalone
     depends_on:
       - db
