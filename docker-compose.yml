@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   syncing-server-js:
-    image: standardnotes/syncing-server-js:1.43.5
+    image: standardnotes/syncing-server-js:1.44.0
     container_name: syncing-server-js-standalone
     depends_on:
       - db
@@ -19,7 +19,7 @@ services:
       - standardnotes_standalone
 
   syncing-server-js-worker:
-    image: standardnotes/syncing-server-js:1.43.5
+    image: standardnotes/syncing-server-js:1.44.0
     container_name: syncing-server-js-worker-standalone
     depends_on:
       - db
@@ -39,7 +39,7 @@ services:
       - standardnotes_standalone
 
   api-gateway:
-    image: standardnotes/api-gateway:1.28.1
+    image: standardnotes/api-gateway:1.28.2
     container_name: api-gateway-standalone
     depends_on:
       - auth
@@ -60,7 +60,7 @@ services:
       - standardnotes_standalone
 
   auth:
-    image: standardnotes/auth:1.31.3
+    image: standardnotes/auth:1.32.3
     container_name: auth-standalone
     depends_on:
       - db
@@ -90,7 +90,7 @@ services:
       - standardnotes_standalone
 
   auth-worker:
-    image: standardnotes/auth:1.31.3
+    image: standardnotes/auth:1.32.3
     container_name: auth-worker-standalone
     depends_on:
       - db
