@@ -46,43 +46,43 @@ case "$COMMAND" in
   'start' )
     checkForConfigFileChanges
     echo "Starting up infrastructure"
-    docker-compose up -d
+    docker compose up -d
     echo "Infrastructure started. Give it a moment to warm up. If you wish please run the './server.sh logs' command to see details."
     ;;
   'status' )
     echo "Services State:"
-    docker-compose ps
+    docker compose ps
     ;;
   'logs' )
-    docker-compose logs -f
+    docker compose logs -f
     ;;
   'update' )
     echo "Stopping all services."
-    docker-compose kill
+    docker compose kill || true
     echo "Pulling changes from Git."
     git pull origin $(git rev-parse --abbrev-ref HEAD)
     echo "Checking for env file changes"
     checkForConfigFileChanges
     echo "Downloading latest images of Standard Notes services."
-    docker-compose pull
+    docker compose pull
     echo "Images up to date. Starting all services."
-    docker-compose up -d
+    docker compose up -d
     echo "Infrastructure started. Give it a moment to warm up. If you wish please run the './server.sh logs' command to see details."
     ;;
   'stop' )
     echo "Stopping all service"
-    docker-compose kill
+    docker compose kill
     echo "Services stopped"
     ;;
   'version' )
-    docker-compose images
+    docker compose images
     ;;
   'cleanup' )
     echo "WARNING: This will permanently delete all of you data! Are you sure?"
     read -p "Continue (y/n)?" choice
     case "$choice" in
       y|Y )
-        docker-compose kill && docker-compose rm -fv
+        docker compose kill && docker compose rm -fv
         rm -rf data/mysql
         rm -rf data/redis
         echo "Cleanup performed. You can start your server with a clean environment."
