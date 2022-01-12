@@ -8,6 +8,11 @@ if [ "$?" -ne "0" ]; then
   exit 1
 fi
 
+DOCKER_COMPOSE_COMMAND="docker compose"
+if [ "$?" -ne "0" ]; then
+  DOCKER_COMPOSE_COMMAND="docker-compose"
+fi
+
 checkConfigFiles() {
   if [ ! -f ".env" ]; then echo "Could not find syncing-server environment file. Please run the './server.sh setup' command and try again." && exit 1; fi
   if [ ! -f "docker/api-gateway.env" ]; then echo "Could not find api-gateway environment file. Please run the './server.sh setup' command and try again." && exit 1; fi
@@ -46,43 +51,43 @@ case "$COMMAND" in
   'start' )
     checkForConfigFileChanges
     echo "Starting up infrastructure"
-    docker compose up -d
+    $DOCKER_COMPOSE_COMMAND up -d
     echo "Infrastructure started. Give it a moment to warm up. If you wish please run the './server.sh logs' command to see details."
     ;;
   'status' )
     echo "Services State:"
-    docker compose ps
+    $DOCKER_COMPOSE_COMMAND ps
     ;;
   'logs' )
-    docker compose logs -f
+    $DOCKER_COMPOSE_COMMAND logs -f
     ;;
   'update' )
     echo "Stopping all services."
-    docker compose kill || true
+    $DOCKER_COMPOSE_COMMAND kill || true
     echo "Pulling changes from Git."
     git pull origin $(git rev-parse --abbrev-ref HEAD)
     echo "Checking for env file changes"
     checkForConfigFileChanges
     echo "Downloading latest images of Standard Notes services."
-    docker compose pull
+    $DOCKER_COMPOSE_COMMAND pull
     echo "Images up to date. Starting all services."
-    docker compose up -d
+    $DOCKER_COMPOSE_COMMAND up -d
     echo "Infrastructure started. Give it a moment to warm up. If you wish please run the './server.sh logs' command to see details."
     ;;
   'stop' )
     echo "Stopping all service"
-    docker compose kill
+    $DOCKER_COMPOSE_COMMAND kill
     echo "Services stopped"
     ;;
   'version' )
-    docker compose images
+    $DOCKER_COMPOSE_COMMAND images
     ;;
   'cleanup' )
     echo "WARNING: This will permanently delete all of you data! Are you sure?"
     read -p "Continue (y/n)?" choice
     case "$choice" in
       y|Y )
-        docker compose kill && docker compose rm -fv
+        $DOCKER_COMPOSE_COMMAND kill && $DOCKER_COMPOSE_COMMAND rm -fv
         rm -rf data/mysql
         rm -rf data/redis
         echo "Cleanup performed. You can start your server with a clean environment."
