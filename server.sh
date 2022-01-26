@@ -9,8 +9,7 @@ if [ "$?" -ne "0" ]; then
 fi
 
 DOCKER_COMPOSE_COMMAND="docker compose"
-_=$($DOCKER_COMPOSE_COMMAND > /dev/null 2>&1)
-if [ "$?" -ne "0" ]; then
+if ! $DOCKER_COMPOSE_COMMAND > /dev/null 2>&1; then
   DOCKER_COMPOSE_COMMAND="docker-compose"
 fi
 
