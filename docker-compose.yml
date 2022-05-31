@@ -15,8 +15,6 @@ services:
     environment:
       PORT: 3000
     restart: unless-stopped
-    networks:
-      - standardnotes_standalone
 
   syncing-server-js-worker:
     image: standardnotes/syncing-server-js
@@ -35,8 +33,6 @@ services:
     environment:
       PORT: 3000
     restart: unless-stopped
-    networks:
-      - standardnotes_standalone
 
   api-gateway:
     image: standardnotes/api-gateway
@@ -59,8 +55,6 @@ services:
       "./packages/api-gateway/docker/entrypoint.sh", "start-web"
     ]
     restart: unless-stopped
-    networks:
-      - standardnotes_standalone
 
   auth:
     image: standardnotes/auth
@@ -90,8 +84,6 @@ services:
       AUTH_JWT_SECRET: '${AUTH_JWT_SECRET}'
       VALET_TOKEN_SECRET: '${VALET_TOKEN_SECRET}'
     restart: unless-stopped
-    networks:
-      - standardnotes_standalone
 
   auth-worker:
     image: standardnotes/auth
@@ -121,8 +113,6 @@ services:
       AUTH_JWT_SECRET: '${AUTH_JWT_SECRET}'
       VALET_TOKEN_SECRET: '${VALET_TOKEN_SECRET}'
     restart: unless-stopped
-    networks:
-      - standardnotes_standalone
 
   files:
     image: standardnotes/files
@@ -141,8 +131,6 @@ services:
     volumes:
       - ./${FILE_UPLOAD_PATH}:/var/www/${FILE_UPLOAD_PATH}
     restart: unless-stopped
-    networks:
-      - standardnotes_standalone
 
   db:
     image: mysql:5.6
@@ -159,8 +147,6 @@ services:
     volumes:
       - ./data/mysql:/var/lib/mysql
       - ./data/import:/docker-entrypoint-initdb.d
-    networks:
-      - standardnotes_standalone
 
   cache:
     image: redis:6.0-alpine
@@ -170,8 +156,6 @@ services:
     expose:
       - 6379
     restart: unless-stopped
-    networks:
-      - standardnotes_standalone
 
   workspace:
     image: standardnotes/workspace
@@ -200,8 +184,6 @@ services:
       REDIS_URL: '${REDIS_URL}'
       AUTH_JWT_SECRET: '${AUTH_JWT_SECRET}'
     restart: unless-stopped
-    networks:
-      - standardnotes_standalone
 
   workspace-worker:
     image: standardnotes/workspace
@@ -230,9 +212,3 @@ services:
       REDIS_URL: '${REDIS_URL}'
       AUTH_JWT_SECRET: '${AUTH_JWT_SECRET}'
     restart: unless-stopped
-    networks:
-      - standardnotes_standalone
-
-networks:
-  standardnotes_standalone:
-    name: standardnotes_standalone
