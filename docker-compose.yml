@@ -51,9 +51,11 @@ services:
       PORT: 3000
       AUTH_JWT_SECRET: '${AUTH_JWT_SECRET}'
       REDIS_URL: '${REDIS_URL}'
+      FILES_SERVER_URL: 'http://localhost:${EXPOSED_FILES_PORT}'
     entrypoint: [
       "./wait-for.sh", "auth", "3000",
       "./wait-for.sh", "syncing-server-js", "3000",
+      "./wait-for.sh", "files", "3000",
       "./docker/entrypoint.sh", "start-web"
     ]
     restart: unless-stopped
@@ -86,6 +88,7 @@ services:
       DB_MIGRATIONS_PATH: '${DB_MIGRATIONS_PATH}'
       REDIS_URL: '${REDIS_URL}'
       AUTH_JWT_SECRET: '${AUTH_JWT_SECRET}'
+      VALET_TOKEN_SECRET: '${VALET_TOKEN_SECRET}'
     restart: unless-stopped
     networks:
       - standardnotes_standalone
@@ -116,6 +119,27 @@ services:
       DB_MIGRATIONS_PATH: '${DB_MIGRATIONS_PATH}'
       REDIS_URL: '${REDIS_URL}'
       AUTH_JWT_SECRET: '${AUTH_JWT_SECRET}'
+      VALET_TOKEN_SECRET: '${VALET_TOKEN_SECRET}'
+    restart: unless-stopped
+    networks:
+      - standardnotes_standalone
+
+  files:
+    image: standardnotes/files:1.9.0
+    container_name: files-standalone
+    entrypoint: [
+      "./wait-for.sh", "db", "3306",
+      "./wait-for.sh", "cache", "6379",
+      "./docker/entrypoint.sh", "start-web"
+    ]
+    ports:
+      - ${EXPOSED_FILES_PORT}:3000
+    env_file: docker/files.env
+    environment:
+      FILE_UPLOAD_PATH: '${FILE_UPLOAD_PATH}'
+      VALET_TOKEN_SECRET: '${VALET_TOKEN_SECRET}'
+    volumes:
+      - ./${FILE_UPLOAD_PATH}:/var/www/${FILE_UPLOAD_PATH}
     restart: unless-stopped
     networks:
       - standardnotes_standalone

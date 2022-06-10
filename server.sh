@@ -17,6 +17,7 @@ checkConfigFiles() {
   if [ ! -f ".env" ]; then echo "Could not find syncing-server environment file. Please run the './server.sh setup' command and try again." && exit 1; fi
   if [ ! -f "docker/api-gateway.env" ]; then echo "Could not find api-gateway environment file. Please run the './server.sh setup' command and try again." && exit 1; fi
   if [ ! -f "docker/auth.env" ]; then echo "Could not find auth environment file. Please run the './server.sh setup' command and try again." && exit 1; fi
+  if [ ! -f "docker/files.env" ]; then echo "Could not find file service environment file. Please run the './server.sh setup' command and try again." && exit 1; fi
 }
 
 checkForConfigFileChanges() {
@@ -36,6 +37,10 @@ compareLineCount() {
   AUTH_ENV_FILE_SAMPLE_LINES=$(wc -l docker/auth.env.sample | awk '{ print $1 }')
   AUTH_ENV_FILE_LINES=$(wc -l docker/auth.env | awk '{ print $1 }')
   if [ "$AUTH_ENV_FILE_SAMPLE_LINES" -ne "$AUTH_ENV_FILE_LINES" ]; then echo "The docker/auth.env file contains different amount of lines than docker/auth.env.sample. This may be caused by the fact that there is a new environment variable to configure. Please update your environment file and try again." && exit 1; fi
+
+  FILES_ENV_FILE_SAMPLE_LINES=$(wc -l docker/files.env.sample | awk '{ print $1 }')
+  FILES_ENV_FILE_LINES=$(wc -l docker/files.env | awk '{ print $1 }')
+  if [ "$FILES_ENV_FILE_SAMPLE_LINES" -ne "$FILES_ENV_FILE_LINES" ]; then echo "The docker/files.env file contains different amount of lines than docker/files.env.sample. This may be caused by the fact that there is a new environment variable to configure. Please update your environment file and try again." && exit 1; fi
 }
 
 COMMAND=$1 && shift 1
@@ -46,6 +51,7 @@ case "$COMMAND" in
     if [ ! -f ".env" ]; then cp .env.sample .env; fi
     if [ ! -f "docker/api-gateway.env" ]; then cp docker/api-gateway.env.sample docker/api-gateway.env; fi
     if [ ! -f "docker/auth.env" ]; then cp docker/auth.env.sample docker/auth.env; fi
+    if [ ! -f "docker/files.env" ]; then cp docker/files.env.sample docker/files.env; fi
     echo "Default configuration files created as .env and docker/*.env files. Feel free to modify values if needed."
     ;;
   'start' )
@@ -73,6 +79,24 @@ case "$COMMAND" in
     echo "Images up to date. Starting all services."
     $DOCKER_COMPOSE_COMMAND up -d
     echo "Infrastructure started. Give it a moment to warm up. If you wish please run the './server.sh logs' command to see details."
+    ;;
+  'create-subscription' )
+    EMAIL=$1
+    if [[ "$EMAIL" = "" ]]; then
+      echo "Please provide an email for the subscription."
+      exit 1
+    fi
+    shift 1
+
+    $DOCKER_COMPOSE_COMMAND exec db sh -c "MYSQL_PWD=\$MYSQL_ROOT_PASSWORD mysql \$MYSQL_DATABASE -e \
+      'INSERT INTO user_roles (role_uuid , user_uuid) VALUES ((SELECT uuid FROM roles WHERE name=\"PRO_USER\" ORDER BY version DESC limit 1) ,(SELECT uuid FROM users WHERE email=\"$EMAIL\")) ON DUPLICATE KEY UPDATE role_uuid = VALUES(role_uuid);' \
+    "
+
+    $DOCKER_COMPOSE_COMMAND exec db sh -c "MYSQL_PWD=\$MYSQL_ROOT_PASSWORD mysql \$MYSQL_DATABASE -e \
+      'INSERT INTO user_subscriptions SET uuid=UUID(), plan_name=\"PRO_PLAN\", ends_at=8640000000000000, created_at=0, updated_at=0, user_uuid=(SELECT uuid FROM users WHERE email=\"$EMAIL\"), subscription_id=1, subscription_type=\"regular\";' \
+    "
+
+    echo "Subscription successfully created. Please consider donating if you do not plan on purchasing a subscription."
     ;;
   'stop' )
     echo "Stopping all service"

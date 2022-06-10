@@ -10,3 +10,8 @@ data/import/*.sql
 auth.env
 api-gateway.env
 syncing-server.env
+files.env
+
+# File Uploads
+data/uploads/*
+!data/uploads/.gitkeep
