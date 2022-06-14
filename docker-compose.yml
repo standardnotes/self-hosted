@@ -51,7 +51,7 @@ services:
       PORT: 3000
       AUTH_JWT_SECRET: '${AUTH_JWT_SECRET}'
       REDIS_URL: '${REDIS_URL}'
-      FILES_SERVER_URL: 'http://localhost:${EXPOSED_FILES_PORT}'
+      FILES_SERVER_URL: '${FILES_SERVER_URL}'
     entrypoint: [
       "./wait-for.sh", "auth", "3000",
       "./wait-for.sh", "syncing-server-js", "3000",
