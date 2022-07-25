@@ -1,15 +1,15 @@
 version: '3.8'
 services:
   syncing-server-js:
-    image: standardnotes/syncing-server-js:1.54.1
+    image: standardnotes/syncing-server-js
     container_name: syncing-server-js-standalone
     depends_on:
       - db
       - cache
     entrypoint: [
-      "./wait-for.sh", "db", "3306",
-      "./wait-for.sh", "cache", "6379",
-      "./docker/entrypoint.sh", "start-web"
+      "./packages/syncing-server/wait-for.sh", "db", "3306",
+      "./packages/syncing-server/wait-for.sh", "cache", "6379",
+      "./packages/syncing-server/docker/entrypoint.sh", "start-web"
     ]
     env_file: .env
     environment:
@@ -19,17 +19,17 @@ services:
       - standardnotes_standalone
 
   syncing-server-js-worker:
-    image: standardnotes/syncing-server-js:1.54.1
+    image: standardnotes/syncing-server-js
     container_name: syncing-server-js-worker-standalone
     depends_on:
       - db
       - cache
       - syncing-server-js
     entrypoint: [
-      "./wait-for.sh", "db", "3306",
-      "./wait-for.sh", "cache", "6379",
-      "./wait-for.sh", "syncing-server-js", "3000",
-       "./docker/entrypoint.sh", "start-worker"
+      "./packages/syncing-server/wait-for.sh", "db", "3306",
+      "./packages/syncing-server/wait-for.sh", "cache", "6379",
+      "./packages/syncing-server/wait-for.sh", "syncing-server-js", "3000",
+       "./packages/syncing-server/docker/entrypoint.sh", "start-worker"
     ]
     env_file: .env
     environment:
@@ -39,7 +39,7 @@ services:
       - standardnotes_standalone
 
   api-gateway:
-    image: standardnotes/api-gateway:1.40.1
+    image: standardnotes/api-gateway
     container_name: api-gateway-standalone
     depends_on:
       - auth
@@ -53,27 +53,27 @@ services:
       REDIS_URL: '${REDIS_URL}'
       FILES_SERVER_URL: '${FILES_SERVER_URL}'
     entrypoint: [
-      "./wait-for.sh", "auth", "3000",
-      "./wait-for.sh", "syncing-server-js", "3000",
-      "./wait-for.sh", "files", "3000",
-      "./docker/entrypoint.sh", "start-web"
+      "./packages/api-gateway/wait-for.sh", "auth", "3000",
+      "./packages/api-gateway/wait-for.sh", "syncing-server-js", "3000",
+      "./packages/api-gateway/wait-for.sh", "files", "3000",
+      "./packages/api-gateway/docker/entrypoint.sh", "start-web"
     ]
     restart: unless-stopped
     networks:
       - standardnotes_standalone
 
   auth:
-    image: standardnotes/auth:1.46.2
+    image: standardnotes/auth
     container_name: auth-standalone
     depends_on:
       - db
       - cache
       - syncing-server-js
     entrypoint: [
-      "./wait-for.sh", "db", "3306",
-      "./wait-for.sh", "cache", "6379",
-      "./wait-for.sh", "syncing-server-js", "3000",
-      "./docker/entrypoint.sh", "start-web"
+      "./packages/auth/wait-for.sh", "db", "3306",
+      "./packages/auth/wait-for.sh", "cache", "6379",
+      "./packages/auth/wait-for.sh", "syncing-server-js", "3000",
+      "./packages/auth/docker/entrypoint.sh", "start-web"
     ]
     env_file: docker/auth.env
     environment:
@@ -94,17 +94,17 @@ services:
       - standardnotes_standalone
 
   auth-worker:
-    image: standardnotes/auth:1.46.2
+    image: standardnotes/auth
     container_name: auth-worker-standalone
     depends_on:
       - db
       - cache
       - auth
     entrypoint: [
-      "./wait-for.sh", "db", "3306",
-      "./wait-for.sh", "cache", "6379",
-      "./wait-for.sh", "auth", "3000",
-      "./docker/entrypoint.sh", "start-worker"
+      "./packages/auth/wait-for.sh", "db", "3306",
+      "./packages/auth/wait-for.sh", "cache", "6379",
+      "./packages/auth/wait-for.sh", "auth", "3000",
+      "./packages/auth/docker/entrypoint.sh", "start-worker"
     ]
     env_file: docker/auth.env
     environment:
@@ -125,12 +125,12 @@ services:
       - standardnotes_standalone
 
   files:
-    image: standardnotes/files:1.9.0
+    image: standardnotes/files
     container_name: files-standalone
     entrypoint: [
-      "./wait-for.sh", "db", "3306",
-      "./wait-for.sh", "cache", "6379",
-      "./docker/entrypoint.sh", "start-web"
+      "./packages/files/wait-for.sh", "db", "3306",
+      "./packages/files/wait-for.sh", "cache", "6379",
+      "./packages/files/docker/entrypoint.sh", "start-web"
     ]
     ports:
       - ${EXPOSED_FILES_PORT}:3000
