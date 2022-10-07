@@ -18,6 +18,7 @@ checkConfigFiles() {
   if [ ! -f "docker/api-gateway.env" ]; then echo "Could not find api-gateway environment file. Please run the './server.sh setup' command and try again." && exit 1; fi
   if [ ! -f "docker/auth.env" ]; then echo "Could not find auth environment file. Please run the './server.sh setup' command and try again." && exit 1; fi
   if [ ! -f "docker/files.env" ]; then echo "Could not find file service environment file. Please run the './server.sh setup' command and try again." && exit 1; fi
+  if [ ! -f "docker/workspace.env" ]; then echo "Could not find workspace service environment file. Please run the './server.sh setup' command and try again." && exit 1; fi
 }
 
 checkForConfigFileChanges() {
@@ -41,6 +42,10 @@ compareLineCount() {
   FILES_ENV_FILE_SAMPLE_LINES=$(wc -l docker/files.env.sample | awk '{ print $1 }')
   FILES_ENV_FILE_LINES=$(wc -l docker/files.env | awk '{ print $1 }')
   if [ "$FILES_ENV_FILE_SAMPLE_LINES" -ne "$FILES_ENV_FILE_LINES" ]; then echo "The docker/files.env file contains different amount of lines than docker/files.env.sample. This may be caused by the fact that there is a new environment variable to configure. Please update your environment file and try again." && exit 1; fi
+
+  WORKSPACE_ENV_FILE_SAMPLE_LINES=$(wc -l docker/workspace.env.sample | awk '{ print $1 }')
+  WORKSPACE_ENV_FILE_LINES=$(wc -l docker/workspace.env | awk '{ print $1 }')
+  if [ "$WORKSPACE_ENV_FILE_SAMPLE_LINES" -ne "$WORKSPACE_ENV_FILE_LINES" ]; then echo "The docker/workspace.env file contains different amount of lines than docker/workspace.env.sample. This may be caused by the fact that there is a new environment variable to configure. Please update your environment file and try again." && exit 1; fi
 }
 
 COMMAND=$1 && shift 1
@@ -52,6 +57,7 @@ case "$COMMAND" in
     if [ ! -f "docker/api-gateway.env" ]; then cp docker/api-gateway.env.sample docker/api-gateway.env; fi
     if [ ! -f "docker/auth.env" ]; then cp docker/auth.env.sample docker/auth.env; fi
     if [ ! -f "docker/files.env" ]; then cp docker/files.env.sample docker/files.env; fi
+    if [ ! -f "docker/workspace.env" ]; then cp docker/workspace.env.sample docker/workspace.env; fi
     echo "Default configuration files created as .env and docker/*.env files. Feel free to modify values if needed."
     ;;
   'start' )
