@@ -29,7 +29,7 @@ services:
       "./packages/syncing-server/wait-for.sh", "db", "3306",
       "./packages/syncing-server/wait-for.sh", "cache", "6379",
       "./packages/syncing-server/wait-for.sh", "syncing-server-js", "3000",
-       "./packages/syncing-server/docker/entrypoint.sh", "start-worker"
+      "./packages/syncing-server/docker/entrypoint.sh", "start-worker"
     ]
     env_file: .env
     environment:

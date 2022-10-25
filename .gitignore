@@ -11,6 +11,7 @@ auth.env
 api-gateway.env
 syncing-server.env
 files.env
+workspace.env
 
 # File Uploads
 data/uploads/*
