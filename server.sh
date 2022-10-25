@@ -75,7 +75,7 @@ case "$COMMAND" in
     ;;
   'update' )
     echo "Stopping all services."
-    $DOCKER_COMPOSE_COMMAND kill || true
+    $DOCKER_COMPOSE_COMMAND kill --remove-orphans || true
     echo "Pulling changes from Git."
     git pull origin $(git rev-parse --abbrev-ref HEAD)
     echo "Checking for env file changes"
@@ -106,7 +106,7 @@ case "$COMMAND" in
     ;;
   'stop' )
     echo "Stopping all service"
-    $DOCKER_COMPOSE_COMMAND kill
+    $DOCKER_COMPOSE_COMMAND kill --remove-orphans
     echo "Services stopped"
     ;;
   'version' )
@@ -117,7 +117,7 @@ case "$COMMAND" in
     read -p "Continue (y/n)?" choice
     case "$choice" in
       y|Y )
-        $DOCKER_COMPOSE_COMMAND kill && $DOCKER_COMPOSE_COMMAND rm -fv
+        $DOCKER_COMPOSE_COMMAND kill --remove-orphans && $DOCKER_COMPOSE_COMMAND rm -fv
         rm -rf data/mysql
         rm -rf data/redis
         echo "Cleanup performed. You can start your server with a clean environment."
