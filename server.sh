@@ -13,6 +13,21 @@ if ! $DOCKER_COMPOSE_COMMAND > /dev/null 2>&1; then
   DOCKER_COMPOSE_COMMAND="docker-compose"
 fi
 
+printUsage() {
+  cat <<EOF
+usage: $(basename $0) [command]
+where [command] can be:
+  help       Shows this help message.
+  cleanup    Removes ALL data for a clean environment.
+  logs       Prints logs from all running services.
+  setup      Initializes the default configuration files.
+  start      Starts the Standard Notes infrastructure.
+  status     Prints the status of services (name, command, state, ports).
+  update     Pulls latest changes and updates images.
+  version    Shows the current version of all containers.
+EOF
+}
+
 checkConfigFiles() {
   if [ ! -f ".env" ]; then echo "Could not find syncing-server environment file. Please run the './server.sh setup' command and try again." && exit 1; fi
   if [ ! -f "docker/api-gateway.env" ]; then echo "Could not find api-gateway environment file. Please run the './server.sh setup' command and try again." && exit 1; fi
@@ -125,8 +140,13 @@ case "$COMMAND" in
         ;;
     esac
     ;;
+  'help' )
+    printUsage
+    exit 0
+    ;;
   * )
     echo "Unknown command"
+    printUsage
     ;;
 esac
 
