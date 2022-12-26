@@ -43,16 +43,16 @@ compareLineCount() {
   if [ "$FILES_ENV_FILE_SAMPLE_LINES" -ne "$FILES_ENV_FILE_LINES" ]; then echo "The docker/files.env file contains different amount of lines than docker/files.env.sample. This may be caused by the fact that there is a new environment variable to configure. Please update your environment file and try again." && exit 1; fi
 }
 
-cleanup() {
+function cleanup {
   local output_logs=$1
   if [ $output_logs == 1 ]
   then
     echo "Outputing last 100 lines of logs"
-    docker compose logs --tail=100
+    $DOCKER_COMPOSE_COMMAND logs --tail=100
   fi
 }
 
-waitForServices() {
+function waitForServices {
   attempt=0
   while [ $attempt -le 180 ]; do
       attempt=$(( $attempt + 1 ))
