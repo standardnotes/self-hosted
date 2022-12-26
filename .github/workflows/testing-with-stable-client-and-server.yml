@@ -22,11 +22,11 @@ jobs:
       - name: Install Headless Chrome
         run: yarn global add mocha-headless-chrome
       - name: Initialize Default Configuration
-        run: ./server.sh setup
+        run: bash ./server.sh setup
       - name: Start Server
-        run: ./server.sh start
+        run: bash ./server.sh start
       - name: Test
-        run: ./server.sh test
+        run: bash ./server.sh test
       - name: Notify Of Failed Suite
         if: ${{ failure() }}
         uses: dawidd6/action-send-mail@v3
