@@ -1,5 +1,4 @@
 #!/bin/sh
-set -e
 
 DOCKER_VERSION=`docker --version`
 
