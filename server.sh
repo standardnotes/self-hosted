@@ -43,6 +43,30 @@ compareLineCount() {
   if [ "$FILES_ENV_FILE_SAMPLE_LINES" -ne "$FILES_ENV_FILE_LINES" ]; then echo "The docker/files.env file contains different amount of lines than docker/files.env.sample. This may be caused by the fact that there is a new environment variable to configure. Please update your environment file and try again." && exit 1; fi
 }
 
+cleanup() {
+  local output_logs=$1
+  if [ $output_logs == 1 ]
+  then
+    echo "Outputing last 100 lines of logs"
+    docker compose logs --tail=100
+  fi
+}
+
+waitForServices() {
+  attempt=0
+  while [ $attempt -le 180 ]; do
+      attempt=$(( $attempt + 1 ))
+      echo "# Waiting for all services to be up (attempt: $attempt) ..."
+      result=$($DOCKER_COMPOSE_COMMAND logs api-gateway)
+      if grep -q 'Server started on port' <<< $result ; then
+          sleep 2 # for warmup
+          echo "# All services are up!"
+          break
+      fi
+      sleep 2
+  done
+}
+
 COMMAND=$1 && shift 1
 
 case "$COMMAND" in
@@ -124,6 +148,22 @@ case "$COMMAND" in
         echo "Invalid option supplied. Aborted cleanup."
         ;;
     esac
+    ;;
+  'test' )
+    waitForServices
+
+    echo "# Starting test suite ..."
+    npx mocha-headless-chrome --timeout 1200000 -f http://localhost:9001/mocha/test.html
+    test_result=$?
+
+    cleanup $test_result
+
+    if [[ $test_result == 0 ]]
+    then
+      exit 0
+    else
+      exit 1
+    fi
     ;;
   * )
     echo "Unknown command"

@@ -1,0 +1,41 @@
+name: Testing With Stable Client And Server
+
+on:
+  schedule:
+    - cron: '0 */12 * * *'
+  workflow_dispatch:
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      snjs:
+        image: standardnotes/snjs
+        ports:
+        - 9001:9001
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Node
+        uses: actions/setup-node@v3
+      - name: Install Headless Chrome
+        run: yarn global add mocha-headless-chrome
+      - name: Initialize Default Configuration
+        run: ./server.sh setup
+      - name: Start Server
+        run: ./server.sh start
+      - name: Test
+        run: ./server.sh test
+      - name: Notify Of Failed Suite
+        if: ${{ failure() }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{secrets.SMTP_HOST}}
+          server_port: ${{secrets.SMTP_PORT}}
+          username: ${{secrets.SMTP_USERNAME}}
+          password: ${{secrets.SMTP_PASSWORD}}
+          subject: E2E Test Suite Failed
+          to: karol@standardnotes.com,aman@standardnotes.com,vardan@standardnotes.com
+          from: help@standardnotes.com
+          body: E2E Test Suite with stable client and server failed!
