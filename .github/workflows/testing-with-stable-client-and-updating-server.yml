@@ -1,0 +1,97 @@
+name: Testing With Stable Client And Updating Server
+
+on:
+  workflow_dispatch:
+    inputs:
+      syncing_server_js_image_tag:
+        type: string
+        default: latest
+        description: The Docker image tag used for Syncing Server JS container
+      api_gateway_image_tag:
+        type: string
+        default: latest
+        description: The Docker image tag used for Api Gateway container
+      auth_image_tag:
+        type: string
+        default: latest
+        description: The Docker image tag used for Auth container
+      files_image_tag:
+        type: string
+        default: latest
+        description: The Docker image tag used for Files container
+      revisions_image_tag:
+        type: string
+        default: latest
+        description: The Docker image tag used for Revisions container
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      snjs:
+        image: standardnotes/snjs
+        ports:
+        - 9001:9001
+      mock-event-publisher:
+        image: standardnotes/mock-event-publisher
+        ports:
+        - 3124:3000
+        env:
+          LOG_LEVEL: debug
+          NODE_ENV: production
+          VERSION: snjs-test
+          SNS_TOPIC_ARN: arn:aws:sns:us-east-1:000000000000:payments-local-topic
+          SNS_ENDPOINT: http://localstack:4566
+          SNS_DISABLE_SSL: true
+          SNS_SECRET_ACCESS_KEY: x
+          SNS_ACCESS_KEY_ID: x
+          SNS_AWS_REGION: us-east-1
+          NEW_RELIC_ENABLED: false
+        options: >-
+          --name "mock-event-publisher"
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Node
+        uses: actions/setup-node@v3
+      - name: Install Headless Chrome
+        run: yarn global add mocha-headless-chrome
+      - name: Initialize Default Configuration
+        run: |
+          bash ./server.sh setup
+          bash ./server.sh generate-keys
+      - name: Setup shorter session TTLs for testing
+        run: |
+          sed -i "s/ACCESS_TOKEN_AGE=.*/ACCESS_TOKEN_AGE=4/g" docker/auth.env
+          sed -i "s/REFRESH_TOKEN_AGE=.*/REFRESH_TOKEN_AGE=7/g" docker/auth.env
+          sed -i "s/EPHEMERAL_SESSION_AGE=.*/EPHEMERAL_SESSION_AGE=300/g" docker/auth.env
+      - name: Setup shorter revisions creating frequency
+        run: |
+          sed -i "s/REVISIONS_FREQUENCY=.*/REVISIONS_FREQUENCY=1/g" .env
+      - name: Setup debug log levels
+        run: |
+          sed -i "s/LOG_LEVEL=.*/LOG_LEVEL=debug/g" docker/auth.env
+          sed -i "s/LOG_LEVEL=.*/LOG_LEVEL=debug/g" docker/api-gateway.env
+          sed -i "s/LOG_LEVEL=.*/LOG_LEVEL=debug/g" docker/files.env
+          sed -i "s/LOG_LEVEL=.*/LOG_LEVEL=debug/g" docker/revisions.env
+          sed -i "s/LOG_LEVEL=.*/LOG_LEVEL=debug/g" .env
+      - name: Start Stable Server
+        run: bash ./server.sh start
+        env:
+          EXPOSED_PORT: 3123
+      - name: Wait for Startup
+        run: bash ./server.sh wait-for-startup
+      - name: Start Updating Server
+        run: bash ./server.sh update
+        env:
+          EXPOSED_PORT: 3123
+          SYNCING_SERVER_JS_IMAGE_TAG: ${{ inputs.syncing_server_js_image_tag }}
+          API_GATEWAY_IMAGE_TAG: ${{ inputs.api_gateway_image_tag }}
+          AUTH_IMAGE_TAG: ${{ inputs.auth_image_tag }}
+          FILES_IMAGE_TAG: ${{ inputs.files_image_tag }}
+          REVISIONS_IMAGE_TAG: ${{ inputs.revisions_image_tag }}
+      - name: Connect external containers to self-hosted network
+        run: docker network connect --alias mock-event-publisher standardnotes_self_hosted mock-event-publisher
+      - name: Test
+        run: bash ./server.sh test

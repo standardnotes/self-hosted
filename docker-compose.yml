@@ -1,6 +1,6 @@
 services:
   syncing-server-js:
-    image: standardnotes/syncing-server-js
+    image: standardnotes/syncing-server-js:${SYNCING_SERVER_JS_IMAGE_TAG}
     container_name: syncing-server-js-self-hosted
     depends_on:
       - db
@@ -22,7 +22,7 @@ services:
       - standardnotes_self_hosted
 
   syncing-server-js-worker:
-    image: standardnotes/syncing-server-js
+    image: standardnotes/syncing-server-js:${SYNCING_SERVER_JS_IMAGE_TAG}
     container_name: syncing-server-js-worker-self-hosted
     depends_on:
       - db
@@ -45,7 +45,7 @@ services:
       - standardnotes_self_hosted
 
   api-gateway:
-    image: standardnotes/api-gateway
+    image: standardnotes/api-gateway:${API_GATEWAY_IMAGE_TAG}
     container_name: api-gateway-self-hosted
     depends_on:
       - auth
@@ -70,7 +70,7 @@ services:
       - standardnotes_self_hosted
 
   auth:
-    image: standardnotes/auth
+    image: standardnotes/auth:${AUTH_IMAGE_TAG}
     container_name: auth-self-hosted
     depends_on:
       - db
@@ -102,7 +102,7 @@ services:
       - standardnotes_self_hosted
 
   auth-worker:
-    image: standardnotes/auth
+    image: standardnotes/auth:${AUTH_IMAGE_TAG}
     container_name: auth-worker-self-hosted
     depends_on:
       - db
@@ -133,7 +133,7 @@ services:
       - standardnotes_self_hosted
 
   files:
-    image: standardnotes/files
+    image: standardnotes/files:${FILES_IMAGE_TAG}
     container_name: files-self-hosted
     entrypoint: [
       "./packages/files/wait-for.sh", "db", "3306",
@@ -154,7 +154,7 @@ services:
       - standardnotes_self_hosted
 
   files-worker:
-    image: standardnotes/files
+    image: standardnotes/files:${FILES_IMAGE_TAG}
     container_name: files-worker-self-hosted
     depends_on:
       - files
@@ -174,7 +174,7 @@ services:
       - standardnotes_self_hosted
 
   revisions:
-    image: standardnotes/revisions
+    image: standardnotes/revisions:${REVISIONS_IMAGE_TAG}
     container_name: revisions-self-hosted
     entrypoint: [
       "./packages/revisions/wait-for.sh", "syncing-server-js", "3000",
@@ -199,7 +199,7 @@ services:
       - standardnotes_self_hosted
 
   revisions-worker:
-    image: standardnotes/revisions
+    image: standardnotes/revisions:${REVISIONS_IMAGE_TAG}
     container_name: revisions-worker-self-hosted
     entrypoint: [
       "./packages/revisions/wait-for.sh", "revisions", "3000",
