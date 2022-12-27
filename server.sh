@@ -23,12 +23,6 @@ checkConfigFiles() {
 checkForConfigFileChanges() {
   checkConfigFiles
   compareLineCount
-
-  echo "Using Syncing Server version: $SYNCING_SERVER_JS_IMAGE_TAG"
-  echo "Using Api Gateway version: $API_GATEWAY_IMAGE_TAG"
-  echo "Using Auth version: $AUTH_IMAGE_TAG"
-  echo "Using File service version: $FILES_IMAGE_TAG"
-  echo "Using Revisions service version: $REVISIONS_IMAGE_TAG"
 }
 
 compareLineCount() {
