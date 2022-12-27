@@ -12,12 +12,6 @@ if ! $DOCKER_COMPOSE_COMMAND > /dev/null 2>&1; then
   DOCKER_COMPOSE_COMMAND="docker-compose"
 fi
 
-echo "Using Syncing Server version: $SYNCING_SERVER_JS_IMAGE_TAG"
-echo "Using Api Gateway version: $API_GATEWAY_IMAGE_TAG"
-echo "Using Auth version: $AUTH_IMAGE_TAG"
-echo "Using File service version: $FILES_IMAGE_TAG"
-echo "Using Revisions service version: $REVISIONS_IMAGE_TAG"
-
 checkConfigFiles() {
   if [ ! -f ".env" ]; then echo "Could not find syncing-server environment file. Please run the './server.sh setup' command and try again." && exit 1; fi
   if [ ! -f "docker/api-gateway.env" ]; then echo "Could not find api-gateway environment file. Please run the './server.sh setup' command and try again." && exit 1; fi
@@ -29,6 +23,12 @@ checkConfigFiles() {
 checkForConfigFileChanges() {
   checkConfigFiles
   compareLineCount
+
+  echo "Using Syncing Server version: $SYNCING_SERVER_JS_IMAGE_TAG"
+  echo "Using Api Gateway version: $API_GATEWAY_IMAGE_TAG"
+  echo "Using Auth version: $AUTH_IMAGE_TAG"
+  echo "Using File service version: $FILES_IMAGE_TAG"
+  echo "Using Revisions service version: $REVISIONS_IMAGE_TAG"
 }
 
 compareLineCount() {
