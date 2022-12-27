@@ -200,6 +200,7 @@ services:
       - 4566
     environment:
       - SERVICES=sns,sqs
+      - DEBUG=1
       - DEFAULT_REGION=us-east-1
       - DOCKER_HOST=unix:///var/run/docker.sock
       - HOSTNAME_EXTERNAL=localstack
