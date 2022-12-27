@@ -29,17 +29,7 @@ jobs:
           bash ./server.sh generate-keys
       - name: Start Server
         run: bash ./server.sh start
+        env:
+          EXPOSED_PORT: 3123
       - name: Test
         run: bash ./server.sh test
-      - name: Notify Of Failed Suite
-        if: ${{ failure() }}
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: ${{secrets.SMTP_HOST}}
-          server_port: ${{secrets.SMTP_PORT}}
-          username: ${{secrets.SMTP_USERNAME}}
-          password: ${{secrets.SMTP_PASSWORD}}
-          subject: E2E Test Suite Failed
-          to: karol@standardnotes.com,aman@standardnotes.com,vardan@standardnotes.com
-          from: help@standardnotes.com
-          body: E2E Test Suite with stable client and server failed!
