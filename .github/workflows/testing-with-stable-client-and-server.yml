@@ -47,6 +47,12 @@ jobs:
           sed -i "s/5184000/4/g" docker/auth.env
           sed -i "s/31556926/7/g" docker/auth.env
           sed -i "s/259200/300/g" docker/auth.env
+      - name: Setup debug log levels
+        run: |
+          sed -i "s/LOG_LEVEL=\"info\"/LOG_LEVEL=\"debug\"/g" docker/auth.env
+          sed -i "s/LOG_LEVEL=\"info\"/LOG_LEVEL=\"debug\"/g" docker/api-gateway.env
+          sed -i "s/LOG_LEVEL=\"info\"/LOG_LEVEL=\"debug\"/g" docker/files.env
+          sed -i "s/LOG_LEVEL=\"info\"/LOG_LEVEL=\"debug\"/g" .env
       - name: Start Server
         run: bash ./server.sh start
         env:
