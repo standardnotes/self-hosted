@@ -22,7 +22,9 @@ jobs:
       - name: Install Headless Chrome
         run: yarn global add mocha-headless-chrome
       - name: Initialize Default Configuration
-        run: bash ./server.sh setup
+        run: |
+          bash ./server.sh setup
+          bash ./server.sh generate-keys
       - name: Start Server
         run: bash ./server.sh start
       - name: Test
