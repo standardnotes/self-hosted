@@ -149,11 +149,11 @@ case "$COMMAND" in
     esac
     ;;
   'generate-keys' )
-    sed -i '' "s/auth_jwt_secret/$(openssl rand -hex 32)/g" .env
-    sed -i '' "s/legacy_jwt_secret/$(openssl rand -hex 32)/g" docker/auth.env
-    sed -i '' "s/secret_key/$(openssl rand -hex 32)/g" docker/auth.env
-    sed -i '' "s/server_key/$(openssl rand -hex 32)/g" docker/auth.env
-    sed -i '' "s/secret/$(openssl rand -hex 32)/g" docker/auth.env
+    sed -i "s/auth_jwt_secret/$(openssl rand -hex 32)/g" .env
+    sed -i "s/legacy_jwt_secret/$(openssl rand -hex 32)/g" docker/auth.env
+    sed -i "s/secret_key/$(openssl rand -hex 32)/g" docker/auth.env
+    sed -i "s/server_key/$(openssl rand -hex 32)/g" docker/auth.env
+    sed -i "s/secret/$(openssl rand -hex 32)/g" docker/auth.env
     ;;
   'test' )
     waitForServices
