@@ -46,16 +46,19 @@ jobs:
           bash ./server.sh generate-keys
       - name: Setup shorter session TTLs for testing
         run: |
-          sed -i "s/5184000/4/g" docker/auth.env
-          sed -i "s/31556926/7/g" docker/auth.env
-          sed -i "s/259200/300/g" docker/auth.env
+          sed -i "s/ACCESS_TOKEN_AGE=.*/ACCESS_TOKEN_AGE=4/g" docker/auth.env
+          sed -i "s/REFRESH_TOKEN_AGE=.*/REFRESH_TOKEN_AGE=7/g" docker/auth.env
+          sed -i "s/EPHEMERAL_SESSION_AGE=.*/EPHEMERAL_SESSION_AGE=300/g" docker/auth.env
+      - name: Setup shorter revisions creating frequency
+        run: |
+          sed -i "s/REVISIONS_FREQUENCY=.*/REVISIONS_FREQUENCY=1/g" .env
       - name: Setup debug log levels
         run: |
-          sed -i "s/LOG_LEVEL=\"info\"/LOG_LEVEL=\"debug\"/g" docker/auth.env
-          sed -i "s/LOG_LEVEL=\"info\"/LOG_LEVEL=\"debug\"/g" docker/api-gateway.env
-          sed -i "s/LOG_LEVEL=\"info\"/LOG_LEVEL=\"debug\"/g" docker/files.env
-          sed -i "s/LOG_LEVEL=\"info\"/LOG_LEVEL=\"debug\"/g" docker/revisions.env
-          sed -i "s/LOG_LEVEL=\"info\"/LOG_LEVEL=\"debug\"/g" .env
+          sed -i "s/LOG_LEVEL=.*/LOG_LEVEL=debug/g" docker/auth.env
+          sed -i "s/LOG_LEVEL=.*/LOG_LEVEL=debug/g" docker/api-gateway.env
+          sed -i "s/LOG_LEVEL=.*/LOG_LEVEL=debug/g" docker/files.env
+          sed -i "s/LOG_LEVEL=.*/LOG_LEVEL=debug/g" docker/revisions.env
+          sed -i "s/LOG_LEVEL=.*/LOG_LEVEL=debug/g" .env
       - name: Start Server
         run: bash ./server.sh start
         env:
