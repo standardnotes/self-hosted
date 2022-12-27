@@ -1,13 +1,14 @@
 services:
   syncing-server-js:
     image: standardnotes/syncing-server-js
-    container_name: syncing-server-js-standalone
+    container_name: syncing-server-js-self-hosted
     depends_on:
       - db
       - cache
     entrypoint: [
       "./packages/syncing-server/wait-for.sh", "db", "3306",
       "./packages/syncing-server/wait-for.sh", "cache", "6379",
+      "./packages/syncing-server/wait-for.sh", "localstack", "4566",
       "./packages/syncing-server/docker/entrypoint.sh", "start-web"
     ]
     env_file: .env
@@ -15,11 +16,11 @@ services:
       PORT: 3000
     restart: on-failure
     networks:
-      - standardnotes_standalone
+      - standardnotes_self_hosted
 
   syncing-server-js-worker:
     image: standardnotes/syncing-server-js
-    container_name: syncing-server-js-worker-standalone
+    container_name: syncing-server-js-worker-self-hosted
     depends_on:
       - db
       - cache
@@ -35,11 +36,11 @@ services:
       PORT: 3000
     restart: on-failure
     networks:
-      - standardnotes_standalone
+      - standardnotes_self_hosted
 
   api-gateway:
     image: standardnotes/api-gateway
-    container_name: api-gateway-standalone
+    container_name: api-gateway-self-hosted
     depends_on:
       - auth
       - syncing-server-js
@@ -59,11 +60,11 @@ services:
     ]
     restart: on-failure
     networks:
-      - standardnotes_standalone
+      - standardnotes_self_hosted
 
   auth:
     image: standardnotes/auth
-    container_name: auth-standalone
+    container_name: auth-self-hosted
     depends_on:
       - db
       - cache
@@ -71,6 +72,7 @@ services:
     entrypoint: [
       "./packages/auth/wait-for.sh", "db", "3306",
       "./packages/auth/wait-for.sh", "cache", "6379",
+      "./packages/auth/wait-for.sh", "localstack", "4566",
       "./packages/auth/wait-for.sh", "syncing-server-js", "3000",
       "./packages/auth/docker/entrypoint.sh", "start-web"
     ]
@@ -90,11 +92,11 @@ services:
       VALET_TOKEN_SECRET: '${VALET_TOKEN_SECRET}'
     restart: on-failure
     networks:
-      - standardnotes_standalone
+      - standardnotes_self_hosted
 
   auth-worker:
     image: standardnotes/auth
-    container_name: auth-worker-standalone
+    container_name: auth-worker-self-hosted
     depends_on:
       - db
       - cache
@@ -121,14 +123,15 @@ services:
       VALET_TOKEN_SECRET: '${VALET_TOKEN_SECRET}'
     restart: on-failure
     networks:
-      - standardnotes_standalone
+      - standardnotes_self_hosted
 
   files:
     image: standardnotes/files
-    container_name: files-standalone
+    container_name: files-self-hosted
     entrypoint: [
       "./packages/files/wait-for.sh", "db", "3306",
       "./packages/files/wait-for.sh", "cache", "6379",
+      "./packages/files/wait-for.sh", "localstack", "4566",
       "./packages/files/docker/entrypoint.sh", "start-web"
     ]
     ports:
@@ -141,11 +144,30 @@ services:
       - ./${FILE_UPLOAD_PATH}:/workspace/packages/files/uploads/${FILE_UPLOAD_PATH}
     restart: on-failure
     networks:
-      - standardnotes_standalone
+      - standardnotes_self_hosted
+
+  files-worker:
+    image: standardnotes/files
+    container_name: files-worker-self-hosted
+    depends_on:
+      - files
+    entrypoint: [
+      "./packages/files/wait-for.sh", "files", "3000",
+      "./packages/files/docker/entrypoint.sh", "start-worker"
+    ]
+    env_file: docker/files.env
+    environment:
+      FILE_UPLOAD_PATH: 'uploads/${FILE_UPLOAD_PATH}'
+      VALET_TOKEN_SECRET: '${VALET_TOKEN_SECRET}'
+    volumes:
+      - ./${FILE_UPLOAD_PATH}:/workspace/packages/files/uploads/${FILE_UPLOAD_PATH}
+    restart: on-failure
+    networks:
+      - standardnotes_self_hosted
 
   db:
     image: mysql:5.6
-    container_name: db-standalone
+    container_name: db-self-hosted
     environment:
       MYSQL_DATABASE: '${DB_DATABASE}'
       MYSQL_USER: '${DB_USERNAME}'
@@ -159,19 +181,35 @@ services:
       - ./data/mysql:/var/lib/mysql
       - ./data/import:/docker-entrypoint-initdb.d
     networks:
-      - standardnotes_standalone
+      - standardnotes_self_hosted
 
   cache:
     image: redis:6.0-alpine
-    container_name: cache-standalone
+    container_name: cache-self-hosted
     volumes:
       - ./data/redis/:/data
     expose:
       - 6379
     restart: on-failure
     networks:
-      - standardnotes_standalone
+      - standardnotes_self_hosted
+
+  localstack:
+    image: localstack/localstack
+    expose:
+      - 4566
+    environment:
+      - SERVICES=sns,sqs
+      - DEFAULT_REGION=us-east-1
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - HOSTNAME_EXTERNAL=localstack
+    volumes:
+      - ./docker/localstack_bootstrap.sh:/etc/localstack/init/ready.d/localstack_bootstrap.sh
+      - ./docker/localstack:/var/lib/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - standardnotes_self_hosted
 
 networks:
-  standardnotes_standalone:
-    name: standardnotes_standalone
+  standardnotes_self_hosted:
+    name: standardnotes_self_hosted
