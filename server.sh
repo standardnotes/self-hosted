@@ -17,6 +17,7 @@ checkConfigFiles() {
   if [ ! -f "docker/api-gateway.env" ]; then echo "Could not find api-gateway environment file. Please run the './server.sh setup' command and try again." && exit 1; fi
   if [ ! -f "docker/auth.env" ]; then echo "Could not find auth environment file. Please run the './server.sh setup' command and try again." && exit 1; fi
   if [ ! -f "docker/files.env" ]; then echo "Could not find file service environment file. Please run the './server.sh setup' command and try again." && exit 1; fi
+  if [ ! -f "docker/revisions.env" ]; then echo "Could not find revisions service environment file. Please run the './server.sh setup' command and try again." && exit 1; fi
 }
 
 checkForConfigFileChanges() {
@@ -40,6 +41,10 @@ compareLineCount() {
   FILES_ENV_FILE_SAMPLE_LINES=$(wc -l docker/files.env.sample | awk '{ print $1 }')
   FILES_ENV_FILE_LINES=$(wc -l docker/files.env | awk '{ print $1 }')
   if [ "$FILES_ENV_FILE_SAMPLE_LINES" -ne "$FILES_ENV_FILE_LINES" ]; then echo "The docker/files.env file contains different amount of lines than docker/files.env.sample. This may be caused by the fact that there is a new environment variable to configure. Please update your environment file and try again." && exit 1; fi
+
+  REVISIONS_ENV_FILE_SAMPLE_LINES=$(wc -l docker/revisions.env.sample | awk '{ print $1 }')
+  REVISIONS_ENV_FILE_LINES=$(wc -l docker/revisions.env | awk '{ print $1 }')
+  if [ "$REVISIONS_ENV_FILE_SAMPLE_LINES" -ne "$REVISIONS_ENV_FILE_LINES" ]; then echo "The docker/revisions.env file contains different amount of lines than docker/files.env.sample. This may be caused by the fact that there is a new environment variable to configure. Please update your environment file and try again." && exit 1; fi
 }
 
 function cleanup {
@@ -66,6 +71,18 @@ function waitForServices {
   done
 }
 
+function replaceConfigValue() {
+  local config_file=$1
+  local config_key=$2
+  local config_value=$3
+
+  if [[ $OSTYPE == 'darwin'* ]]; then
+    sed -i '' "s/$config_key=.*/$config_key=$config_value/g" $config_file
+  else
+    sed -i "s/$config_key=.*/$config_key=$config_value/g" $config_file
+  fi
+}
+
 COMMAND=$1 && shift 1
 
 case "$COMMAND" in
@@ -75,6 +92,7 @@ case "$COMMAND" in
     if [ ! -f "docker/api-gateway.env" ]; then cp docker/api-gateway.env.sample docker/api-gateway.env; fi
     if [ ! -f "docker/auth.env" ]; then cp docker/auth.env.sample docker/auth.env; fi
     if [ ! -f "docker/files.env" ]; then cp docker/files.env.sample docker/files.env; fi
+    if [ ! -f "docker/revisions.env" ]; then cp docker/revisions.env.sample docker/revisions.env; fi
     echo "Default configuration files created as .env and docker/*.env files. Feel free to modify values if needed."
     ;;
   'start' )
@@ -130,12 +148,13 @@ case "$COMMAND" in
     $DOCKER_COMPOSE_COMMAND images
     ;;
   'cleanup' )
-    echo "WARNING: This will permanently delete all of you data! Are you sure?"
+    echo "WARNING: This will permanently delete all of your data! Are you sure?"
     read -p "Continue (y/n)?" choice
     case "$choice" in
       y|Y )
         $DOCKER_COMPOSE_COMMAND kill --remove-orphans && $DOCKER_COMPOSE_COMMAND rm -fv
         rm -rf data/mysql
+        rm -rf data/revisions-db
         rm -rf data/redis
         echo "Cleanup performed. You can start your server with a clean environment."
         ;;
@@ -149,11 +168,11 @@ case "$COMMAND" in
     esac
     ;;
   'generate-keys' )
-    sed -i "s/auth_jwt_secret/$(openssl rand -hex 32)/g" .env
-    sed -i "s/legacy_jwt_secret/$(openssl rand -hex 32)/g" docker/auth.env
-    sed -i "s/secret_key/$(openssl rand -hex 32)/g" docker/auth.env
-    sed -i "s/server_key/$(openssl rand -hex 32)/g" docker/auth.env
-    sed -i "s/secret/$(openssl rand -hex 32)/g" docker/auth.env
+    replaceConfigValue .env AUTH_JWT_SECRET $(openssl rand -hex 32)
+    replaceConfigValue docker/auth.env LEGACY_JWT_SECRET $(openssl rand -hex 32)
+    replaceConfigValue docker/auth.env PSEUDO_KEY_PARAMS_KEY $(openssl rand -hex 32)
+    replaceConfigValue docker/auth.env ENCRYPTION_SERVER_KEY $(openssl rand -hex 32)
+    replaceConfigValue docker/auth.env JWT_SECRET $(openssl rand -hex 32)
     ;;
   'test' )
     waitForServices

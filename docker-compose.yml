@@ -56,6 +56,7 @@ services:
       "./packages/api-gateway/wait-for.sh", "auth", "3000",
       "./packages/api-gateway/wait-for.sh", "syncing-server-js", "3000",
       "./packages/api-gateway/wait-for.sh", "files", "3000",
+      "./packages/api-gateway/wait-for.sh", "revisions", "3000",
       "./packages/api-gateway/docker/entrypoint.sh", "start-web"
     ]
     restart: on-failure
@@ -153,6 +154,7 @@ services:
       - files
     entrypoint: [
       "./packages/files/wait-for.sh", "files", "3000",
+      "./packages/files/wait-for.sh", "localstack", "4566",
       "./packages/files/docker/entrypoint.sh", "start-worker"
     ]
     env_file: docker/files.env
@@ -161,6 +163,56 @@ services:
       VALET_TOKEN_SECRET: '${VALET_TOKEN_SECRET}'
     volumes:
       - ./${FILE_UPLOAD_PATH}:/workspace/packages/files/uploads/${FILE_UPLOAD_PATH}
+    restart: on-failure
+    networks:
+      - standardnotes_self_hosted
+
+  revisions:
+    image: standardnotes/revisions
+    container_name: revisions-self-hosted
+    entrypoint: [
+      "./packages/revisions/wait-for.sh", "syncing-server-js", "3000",
+      "./packages/revisions/wait-for.sh", "revisions-db", "3306",
+      "./packages/revisions/wait-for.sh", "localstack", "4566",
+      "./packages/revisions/docker/entrypoint.sh", "start-web"
+    ]
+    env_file: docker/revisions.env
+    environment:
+      PORT: 3000
+      AUTH_JWT_SECRET: '${AUTH_JWT_SECRET}'
+      DB_HOST: '${REVISIONS_DB_HOST}'
+      DB_REPLICA_HOST: '${REVISIONS_DB_REPLICA_HOST}'
+      DB_PORT: '${REVISIONS_DB_PORT}'
+      DB_DATABASE: '${REVISIONS_DB_DATABASE}'
+      DB_USERNAME: '${REVISIONS_DB_USERNAME}'
+      DB_PASSWORD: '${REVISIONS_DB_PASSWORD}'
+      DB_DEBUG_LEVEL: '${REVISIONS_DB_DEBUG_LEVEL}'
+      DB_MIGRATIONS_PATH: '${REVISIONS_DB_MIGRATIONS_PATH}'
+    restart: on-failure
+    networks:
+      - standardnotes_self_hosted
+
+  revisions-worker:
+    image: standardnotes/revisions
+    container_name: revisions-worker-self-hosted
+    entrypoint: [
+      "./packages/revisions/wait-for.sh", "revisions", "3000",
+      "./packages/revisions/docker/entrypoint.sh", "start-worker"
+    ]
+    env_file: docker/revisions.env
+    environment:
+      PORT: 3000
+      AUTH_JWT_SECRET: '${AUTH_JWT_SECRET}'
+      DB_HOST: '${REVISIONS_DB_HOST}'
+      DB_REPLICA_HOST: '${REVISIONS_DB_REPLICA_HOST}'
+      DB_PORT: '${REVISIONS_DB_PORT}'
+      DB_DATABASE: '${REVISIONS_DB_DATABASE}'
+      DB_USERNAME: '${REVISIONS_DB_USERNAME}'
+      DB_PASSWORD: '${REVISIONS_DB_PASSWORD}'
+      DB_DEBUG_LEVEL: '${REVISIONS_DB_DEBUG_LEVEL}'
+      DB_MIGRATIONS_PATH: '${REVISIONS_DB_MIGRATIONS_PATH}'
+    volumes:
+      - ./${FILE_UPLOAD_PATH}:/workspace/packages/revisions/uploads/${FILE_UPLOAD_PATH}
     restart: on-failure
     networks:
       - standardnotes_self_hosted
@@ -183,6 +235,23 @@ services:
     networks:
       - standardnotes_self_hosted
 
+  revisions-db:
+    image: mysql:8
+    container_name: revisions-db-self-hosted
+    environment:
+      MYSQL_DATABASE: '${REVISIONS_DB_DATABASE}'
+      MYSQL_USER: '${REVISIONS_DB_USERNAME}'
+      MYSQL_PASSWORD: '${REVISIONS_DB_PASSWORD}'
+      MYSQL_ROOT_PASSWORD: '${REVISIONS_DB_PASSWORD}'
+    expose:
+      - 3306
+    restart: on-failure
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8 --collation-server=utf8_general_ci
+    volumes:
+      - ./data/revisions-db:/var/lib/mysql
+    networks:
+      - standardnotes_self_hosted
+
   cache:
     image: redis:6.0-alpine
     container_name: cache-self-hosted
@@ -200,13 +269,11 @@ services:
       - 4566
     environment:
       - SERVICES=sns,sqs
-      - DEBUG=1
       - DEFAULT_REGION=us-east-1
       - DOCKER_HOST=unix:///var/run/docker.sock
       - HOSTNAME_EXTERNAL=localstack
     volumes:
       - ./docker/localstack_bootstrap.sh:/etc/localstack/init/ready.d/localstack_bootstrap.sh
-      - ./docker/localstack:/var/lib/localstack
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - standardnotes_self_hosted

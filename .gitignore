@@ -2,6 +2,7 @@
 
 # MySQL & Redis data
 data/mysql
+data/revisions-db
 data/redis
 data/import/*.sql
 
@@ -11,6 +12,7 @@ auth.env
 api-gateway.env
 syncing-server.env
 files.env
+revisions.env
 
 # File Uploads
 data/uploads/*
