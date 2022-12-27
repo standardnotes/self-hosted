@@ -14,6 +14,9 @@ services:
     env_file: .env
     environment:
       PORT: 3000
+      FILE_UPLOAD_PATH: 'uploads/${FILE_UPLOAD_PATH}'
+    volumes:
+      - ./${FILE_UPLOAD_PATH}:/workspace/packages/syncing-server/uploads/${FILE_UPLOAD_PATH}
     restart: on-failure
     networks:
       - standardnotes_self_hosted
@@ -34,6 +37,9 @@ services:
     env_file: .env
     environment:
       PORT: 3000
+      FILE_UPLOAD_PATH: 'uploads/${FILE_UPLOAD_PATH}'
+    volumes:
+      - ./${FILE_UPLOAD_PATH}:/workspace/packages/syncing-server/uploads/${FILE_UPLOAD_PATH}
     restart: on-failure
     networks:
       - standardnotes_self_hosted
@@ -211,6 +217,7 @@ services:
       DB_PASSWORD: '${REVISIONS_DB_PASSWORD}'
       DB_DEBUG_LEVEL: '${REVISIONS_DB_DEBUG_LEVEL}'
       DB_MIGRATIONS_PATH: '${REVISIONS_DB_MIGRATIONS_PATH}'
+      FILE_UPLOAD_PATH: 'uploads/${FILE_UPLOAD_PATH}'
     volumes:
       - ./${FILE_UPLOAD_PATH}:/workspace/packages/revisions/uploads/${FILE_UPLOAD_PATH}
     restart: on-failure
