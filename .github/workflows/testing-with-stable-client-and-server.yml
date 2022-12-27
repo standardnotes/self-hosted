@@ -42,6 +42,11 @@ jobs:
         run: |
           bash ./server.sh setup
           bash ./server.sh generate-keys
+      - name: Setup shorter session TTLs for testing
+        run: |
+          sed -i "s/5184000/4/g" docker/auth.env
+          sed -i "s/31556926/7/g" docker/auth.env
+          sed -i "s/259200/300/g" docker/auth.env
       - name: Start Server
         run: bash ./server.sh start
         env:
