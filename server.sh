@@ -47,7 +47,7 @@ compareLineCount() {
   if [ "$REVISIONS_ENV_FILE_SAMPLE_LINES" -ne "$REVISIONS_ENV_FILE_LINES" ]; then echo "The docker/revisions.env file contains different amount of lines than docker/files.env.sample. This may be caused by the fact that there is a new environment variable to configure. Please update your environment file and try again." && exit 1; fi
 }
 
-function cleanup {
+cleanup() {
   local output_logs=$1
   if [ $output_logs == 1 ]
   then
@@ -56,7 +56,7 @@ function cleanup {
   fi
 }
 
-function waitForServices {
+waitForServices() {
   attempt=0
   while [ $attempt -le 180 ]; do
       attempt=$(( $attempt + 1 ))
@@ -71,7 +71,7 @@ function waitForServices {
   done
 }
 
-function replaceConfigValue() {
+replaceConfigValue() {
   local config_file=$1
   local config_key=$2
   local config_value=$3

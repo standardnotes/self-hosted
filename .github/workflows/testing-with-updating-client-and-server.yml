@@ -63,8 +63,8 @@ jobs:
         run: yarn global add mocha-headless-chrome
       - name: Initialize Default Configuration
         run: |
-          bash ./server.sh setup
-          bash ./server.sh generate-keys
+          ./server.sh setup
+          ./server.sh generate-keys
       - name: Setup shorter session TTLs for testing
         run: |
           sed -i "s/ACCESS_TOKEN_AGE=.*/ACCESS_TOKEN_AGE=4/g" docker/auth.env
@@ -81,13 +81,13 @@ jobs:
           sed -i "s/LOG_LEVEL=.*/LOG_LEVEL=debug/g" docker/revisions.env
           sed -i "s/LOG_LEVEL=.*/LOG_LEVEL=debug/g" .env
       - name: Start Stable Server
-        run: bash ./server.sh start
+        run: ./server.sh start
         env:
           EXPOSED_PORT: 3123
       - name: Wait for Startup
-        run: bash ./server.sh wait-for-startup
+        run: ./server.sh wait-for-startup
       - name: Start Updating Server
-        run: bash ./server.sh update
+        run: ./server.sh update
         env:
           EXPOSED_PORT: 3123
           SYNCING_SERVER_JS_IMAGE_TAG: ${{ inputs.syncing_server_js_image_tag }}
@@ -98,4 +98,4 @@ jobs:
       - name: Connect external containers to self-hosted network
         run: docker network connect --alias mock-event-publisher standardnotes_self_hosted mock-event-publisher
       - name: Test
-        run: bash ./server.sh test
+        run: ./server.sh test
