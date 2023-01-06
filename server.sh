@@ -95,6 +95,15 @@ case "$COMMAND" in
     if [ ! -f "docker/revisions.env" ]; then cp docker/revisions.env.sample docker/revisions.env; fi
     echo "Default configuration files created as .env and docker/*.env files. Feel free to modify values if needed."
     ;;
+  'restore-config-defaults' )
+    echo "Initializing default configuration"
+    cp .env.sample .env
+    cp docker/api-gateway.env.sample docker/api-gateway.env
+    cp docker/auth.env.sample docker/auth.env
+    cp docker/files.env.sample docker/files.env
+    cp docker/revisions.env.sample docker/revisions.env
+    echo "Default configuration files restored as .env and docker/*.env files. Feel free to modify values if needed."
+    ;;
   'start' )
     checkForConfigFileChanges
     echo "Starting up infrastructure"
