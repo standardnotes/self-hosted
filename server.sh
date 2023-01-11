@@ -62,7 +62,7 @@ waitForServices() {
       attempt=$(( $attempt + 1 ))
       echo "# Waiting for all services to be up (attempt: $attempt) ..."
       result=$($DOCKER_COMPOSE_COMMAND logs api-gateway)
-      if grep -q 'Server started on port' <<< $result ; then
+      if echo "$result" | grep -q 'Server started on port' ; then
           sleep 2 # for warmup
           echo "# All services are up!"
           break
