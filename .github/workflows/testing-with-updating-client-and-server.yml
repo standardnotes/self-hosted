@@ -31,14 +31,6 @@ on:
         type: string
         default: latest
         description: The Docker image tag used for scheduler container
-      websockets_image_tag:
-        type: string
-        default: latest
-        description: The Docker image tag used for websockets container
-      event_store_image_tag:
-        type: string
-        default: latest
-        description: The Docker image tag used for event store container
       snjs_image_tag:
         type: string
         default: latest
