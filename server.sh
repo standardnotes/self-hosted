@@ -7,6 +7,13 @@ if [ "$?" -ne "0" ]; then
   exit 1
 fi
 
+CURL_AVAILABLE=`which curl`
+
+if [ "$?" -ne "0" ]; then
+  echo "Please install cURL before proceeding."
+  exit 1
+fi
+
 DOCKER_COMPOSE_COMMAND="docker compose"
 if ! $DOCKER_COMPOSE_COMMAND > /dev/null 2>&1; then
   DOCKER_COMPOSE_COMMAND="docker-compose"
@@ -61,8 +68,8 @@ waitForServices() {
   while [ $attempt -le 180 ]; do
       attempt=$(( $attempt + 1 ))
       echo "# Waiting for all services to be up (attempt: $attempt) ..."
-      result=$($DOCKER_COMPOSE_COMMAND logs api-gateway)
-      if grep -q 'Server started on port' <<< $result ; then
+      ping_api_gateway_result=`curl -s $($DOCKER_COMPOSE_COMMAND port api-gateway 3000)`
+      if [ "$?" -eq "0" ]; then
           sleep 2 # for warmup
           echo "# All services are up!"
           break
