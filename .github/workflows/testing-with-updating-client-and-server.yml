@@ -80,17 +80,17 @@ jobs:
           sed -i "s/LOG_LEVEL=.*/LOG_LEVEL=debug/g" docker/files.env
           sed -i "s/LOG_LEVEL=.*/LOG_LEVEL=debug/g" docker/revisions.env
           sed -i "s/LOG_LEVEL=.*/LOG_LEVEL=debug/g" .env
-      # - name: Start Stable Server
-      #   run: ./server.sh start
-      #   env:
-      #     EXPOSED_PORT: 3123
-      #     SYNCING_SERVER_JS_IMAGE_TAG: latest
-      #     API_GATEWAY_IMAGE_TAG: latest
-      #     AUTH_IMAGE_TAG: latest
-      #     FILES_IMAGE_TAG: latest
-      #     REVISIONS_IMAGE_TAG: latest
-      # - name: Wait for Startup
-      #   run: ./server.sh wait-for-startup
+      - name: Start Stable Server
+        run: ./server.sh start
+        env:
+          EXPOSED_PORT: 3123
+          SYNCING_SERVER_JS_IMAGE_TAG: latest
+          API_GATEWAY_IMAGE_TAG: latest
+          AUTH_IMAGE_TAG: latest
+          FILES_IMAGE_TAG: latest
+          REVISIONS_IMAGE_TAG: latest
+      - name: Wait for Startup
+        run: ./server.sh wait-for-startup
       - name: Start Updating Server
         run: ./server.sh update
         env:
