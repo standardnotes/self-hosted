@@ -234,7 +234,7 @@ services:
       MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
     expose:
       - 3306
-    restart: on-failure
+    restart: unless-stopped
     command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8 --collation-server=utf8_general_ci
     volumes:
       - ./data/mysql:/var/lib/mysql
@@ -252,7 +252,7 @@ services:
       MYSQL_ROOT_PASSWORD: '${REVISIONS_DB_PASSWORD}'
     expose:
       - 3306
-    restart: on-failure
+    restart: unless-stopped
     command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8 --collation-server=utf8_general_ci
     volumes:
       - ./data/revisions-db:/var/lib/mysql
@@ -266,7 +266,7 @@ services:
       - ./data/redis/:/data
     expose:
       - 6379
-    restart: on-failure
+    restart: unless-stopped
     networks:
       - standardnotes_self_hosted
 
@@ -274,6 +274,7 @@ services:
     image: localstack/localstack
     expose:
       - 4566
+    restart: unless-stopped
     environment:
       - SERVICES=sns,sqs
       - DEFAULT_REGION=us-east-1
