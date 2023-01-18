@@ -55,7 +55,7 @@ jobs:
           sed -i "s/EPHEMERAL_SESSION_AGE=.*/EPHEMERAL_SESSION_AGE=300/g" docker/auth.env
       - name: Setup shorter revisions creating frequency
         run: |
-          sed -i "s/REVISIONS_FREQUENCY=.*/REVISIONS_FREQUENCY=1/g" .env
+          sed -i "s/REVISIONS_FREQUENCY=.*/REVISIONS_FREQUENCY=5/g" .env
       - name: Setup debug log levels
         run: |
           sed -i "s/LOG_LEVEL=.*/LOG_LEVEL=debug/g" docker/auth.env
