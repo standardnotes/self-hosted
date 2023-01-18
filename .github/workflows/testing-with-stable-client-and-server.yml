@@ -36,6 +36,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: Checkout On Previous Commit
+        run: git checkout HEAD~1
       - name: Set up Node
         uses: actions/setup-node@v3
       - name: Install Headless Chrome
@@ -59,10 +63,20 @@ jobs:
           sed -i "s/LOG_LEVEL=.*/LOG_LEVEL=debug/g" docker/files.env
           sed -i "s/LOG_LEVEL=.*/LOG_LEVEL=debug/g" docker/revisions.env
           sed -i "s/LOG_LEVEL=.*/LOG_LEVEL=debug/g" .env
-      - name: Start Server
+      - name: Start Stable Server
         run: ./server.sh start
         env:
           EXPOSED_PORT: 3123
+      - name: Wait for Startup
+        run: ./server.sh wait-for-startup
+      - name: Checkout On Latest Commit
+        run: git switch -
+      - name: Start Updating Server
+        run: ./server.sh update
+        env:
+          EXPOSED_PORT: 3123
+      - name: Wait for Startup
+        run: ./server.sh wait-for-startup
       - name: Connect external containers to self-hosted network
         run: docker network connect --alias mock-event-publisher standardnotes_self_hosted mock-event-publisher
       - name: Test

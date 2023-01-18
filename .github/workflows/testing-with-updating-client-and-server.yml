@@ -57,6 +57,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: Checkout On Previous Commit
+        run: git checkout HEAD~1
       - name: Set up Node
         uses: actions/setup-node@v3
       - name: Install Headless Chrome
@@ -91,6 +95,8 @@ jobs:
           REVISIONS_IMAGE_TAG: latest
       - name: Wait for Startup
         run: ./server.sh wait-for-startup
+      - name: Checkout On Latest Commit
+        run: git switch -
       - name: Start Updating Server
         run: ./server.sh update
         env:
