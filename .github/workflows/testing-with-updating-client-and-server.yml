@@ -72,7 +72,7 @@ jobs:
       - name: Setup shorter session TTLs for testing
         run: |
           sed -i "s/ACCESS_TOKEN_AGE=.*/ACCESS_TOKEN_AGE=4/g" docker/auth.env
-          sed -i "s/REFRESH_TOKEN_AGE=.*/REFRESH_TOKEN_AGE=7/g" docker/auth.env
+          sed -i "s/REFRESH_TOKEN_AGE=.*/REFRESH_TOKEN_AGE=10/g" docker/auth.env
           sed -i "s/EPHEMERAL_SESSION_AGE=.*/EPHEMERAL_SESSION_AGE=300/g" docker/auth.env
       - name: Setup shorter revisions creating frequency
         run: |
