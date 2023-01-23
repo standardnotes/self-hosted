@@ -48,6 +48,18 @@ jobs:
         run: |
           ./server.sh setup
           ./server.sh generate-keys
+      - name: Start Stable Server
+        run: ./server.sh start
+        env:
+          EXPOSED_PORT: 3123
+      - name: Wait for Startup
+        run: ./server.sh wait-for-startup
+      - name: Checkout On Latest Commit
+        run: git switch -
+      - name: Initialize Default Configuration on Latest Commit
+        run: |
+          ./server.sh restore-config-defaults
+          ./server.sh generate-keys
       - name: Setup shorter session TTLs for testing
         run: |
           sed -i "s/ACCESS_TOKEN_AGE=.*/ACCESS_TOKEN_AGE=4/g" docker/auth.env
@@ -63,18 +75,6 @@ jobs:
           sed -i "s/LOG_LEVEL=.*/LOG_LEVEL=debug/g" docker/files.env
           sed -i "s/LOG_LEVEL=.*/LOG_LEVEL=debug/g" docker/revisions.env
           sed -i "s/LOG_LEVEL=.*/LOG_LEVEL=debug/g" .env
-      - name: Start Stable Server
-        run: ./server.sh start
-        env:
-          EXPOSED_PORT: 3123
-      - name: Wait for Startup
-        run: ./server.sh wait-for-startup
-      - name: Checkout On Latest Commit
-        run: git switch -
-      - name: Initialize Default Configuration on Latest Commit
-        run: |
-          ./server.sh restore-config-defaults
-          ./server.sh generate-keys
       - name: Start Updating Server
         run: ./server.sh update
         env:
