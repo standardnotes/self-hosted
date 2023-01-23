@@ -71,6 +71,10 @@ jobs:
         run: ./server.sh wait-for-startup
       - name: Checkout On Latest Commit
         run: git switch -
+      - name: Initialize Default Configuration on Latest Commit
+        run: |
+          ./server.sh restore-config-defaults
+          ./server.sh generate-keys
       - name: Start Updating Server
         run: ./server.sh update
         env:
