@@ -69,6 +69,10 @@ jobs:
         run: |
           ./server.sh setup
           ./server.sh generate-keys
+      - name: Set Database Passwords
+        run: |
+          sed -i "s/REVISIONS_DB_PASSWORD=.*/REVISIONS_DB_PASSWORD=changeme123/g" .env
+          sed -i "s/DB_PASSWORD=.*/DB_PASSWORD=changeme123/g" .env
       - name: Start Stable Server
         run: ./server.sh start
         env:
@@ -86,6 +90,10 @@ jobs:
         run: |
           ./server.sh restore-config-defaults
           ./server.sh generate-keys
+      - name: Set Database Passwords
+        run: |
+          sed -i "s/REVISIONS_DB_PASSWORD=.*/REVISIONS_DB_PASSWORD=changeme123/g" .env
+          sed -i "s/DB_PASSWORD=.*/DB_PASSWORD=changeme123/g" .env
       - name: Setup shorter session TTLs for testing
         run: |
           sed -i "s/ACCESS_TOKEN_AGE=.*/ACCESS_TOKEN_AGE=4/g" docker/auth.env

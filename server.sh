@@ -186,6 +186,8 @@ case "$COMMAND" in
   'generate-keys' )
     replaceConfigValue .env AUTH_JWT_SECRET $(openssl rand -hex 32)
     replaceConfigValue .env VALET_TOKEN_SECRET $(openssl rand -hex 32)
+    replaceConfigValue .env DB_PASSWORD $(openssl rand -hex 32)
+    replaceConfigValue .env REVISIONS_DB_PASSWORD $(openssl rand -hex 32)
     replaceConfigValue docker/auth.env LEGACY_JWT_SECRET $(openssl rand -hex 32)
     replaceConfigValue docker/auth.env PSEUDO_KEY_PARAMS_KEY $(openssl rand -hex 32)
     replaceConfigValue docker/auth.env ENCRYPTION_SERVER_KEY $(openssl rand -hex 32)
