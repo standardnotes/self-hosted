@@ -267,14 +267,13 @@ services:
       - standardnotes_self_hosted
 
   localstack:
-    image: localstack/localstack
+    image: localstack/localstack:1.3
+    container_name: localstack-self-hosted
     expose:
       - 4566
     restart: unless-stopped
     environment:
       - SERVICES=sns,sqs
-      - AWS_DEFAULT_REGION=us-east-1
-      - DEFAULT_REGION=us-east-1
       - DOCKER_HOST=unix:///var/run/docker.sock
       - HOSTNAME_EXTERNAL=localstack
     volumes:
