@@ -273,6 +273,7 @@ services:
     restart: unless-stopped
     environment:
       - SERVICES=sns,sqs
+      - AWS_DEFAULT_REGION=us-east-1
       - DEFAULT_REGION=us-east-1
       - DOCKER_HOST=unix:///var/run/docker.sock
       - HOSTNAME_EXTERNAL=localstack
