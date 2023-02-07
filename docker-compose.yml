@@ -1,7 +1,6 @@
 services:
   syncing-server-js:
-    # locked last supported version. Deprecated in favor of one container self-hosting setup
-    image: standardnotes/syncing-server-js:44dfa378523acafe683b704114e5c80a86bde028
+    image: standardnotes/syncing-server-js:${SYNCING_SERVER_JS_IMAGE_TAG}
     container_name: syncing-server-js-self-hosted
     depends_on:
       - db
@@ -23,8 +22,7 @@ services:
       - standardnotes_self_hosted
 
   syncing-server-js-worker:
-    # locked last supported version. Deprecated in favor of one container self-hosting setup
-    image: standardnotes/syncing-server-js:44dfa378523acafe683b704114e5c80a86bde028
+    image: standardnotes/syncing-server-js:${SYNCING_SERVER_JS_IMAGE_TAG}
     container_name: syncing-server-js-worker-self-hosted
     depends_on:
       - db
@@ -47,8 +45,7 @@ services:
       - standardnotes_self_hosted
 
   api-gateway:
-    # locked last supported version. Deprecated in favor of one container self-hosting setup
-    image: standardnotes/api-gateway:44dfa378523acafe683b704114e5c80a86bde028
+    image: standardnotes/api-gateway:${API_GATEWAY_IMAGE_TAG}
     container_name: api-gateway-self-hosted
     depends_on:
       - auth
@@ -73,8 +70,7 @@ services:
       - standardnotes_self_hosted
 
   auth:
-    # locked last supported version. Deprecated in favor of one container self-hosting setup
-    image: standardnotes/auth:306f6edd4e89538e3017374bb677f5db61f91de3
+    image: standardnotes/auth:${AUTH_IMAGE_TAG}
     container_name: auth-self-hosted
     depends_on:
       - db
@@ -105,8 +101,7 @@ services:
       - standardnotes_self_hosted
 
   auth-worker:
-    # locked last supported version. Deprecated in favor of one container self-hosting setup
-    image: standardnotes/auth:306f6edd4e89538e3017374bb677f5db61f91de3
+    image: standardnotes/auth:${AUTH_IMAGE_TAG}
     container_name: auth-worker-self-hosted
     depends_on:
       - db
@@ -136,8 +131,7 @@ services:
       - standardnotes_self_hosted
 
   files:
-    # locked last supported version. Deprecated in favor of one container self-hosting setup
-    image: standardnotes/files:44dfa378523acafe683b704114e5c80a86bde028
+    image: standardnotes/files:${FILES_IMAGE_TAG}
     container_name: files-self-hosted
     entrypoint: [
       "./packages/files/wait-for.sh", "db", "3306",
@@ -158,8 +152,7 @@ services:
       - standardnotes_self_hosted
 
   files-worker:
-    # locked last supported version. Deprecated in favor of one container self-hosting setup
-    image: standardnotes/files:44dfa378523acafe683b704114e5c80a86bde028
+    image: standardnotes/files:${FILES_IMAGE_TAG}
     container_name: files-worker-self-hosted
     depends_on:
       - files
@@ -179,8 +172,7 @@ services:
       - standardnotes_self_hosted
 
   revisions:
-    # locked last supported version. Deprecated in favor of one container self-hosting setup
-    image: standardnotes/revisions:44dfa378523acafe683b704114e5c80a86bde028
+    image: standardnotes/revisions:${REVISIONS_IMAGE_TAG}
     container_name: revisions-self-hosted
     entrypoint: [
       "./packages/revisions/wait-for.sh", "syncing-server-js", "3000",
@@ -204,8 +196,7 @@ services:
       - standardnotes_self_hosted
 
   revisions-worker:
-    # locked last supported version. Deprecated in favor of one container self-hosting setup
-    image: standardnotes/revisions:44dfa378523acafe683b704114e5c80a86bde028
+    image: standardnotes/revisions:${REVISIONS_IMAGE_TAG}
     container_name: revisions-worker-self-hosted
     entrypoint: [
       "./packages/revisions/wait-for.sh", "revisions", "3000",
