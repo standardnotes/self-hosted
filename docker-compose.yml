@@ -6,10 +6,10 @@ services:
       - db
       - cache
     entrypoint: [
-      "./packages/syncing-server/wait-for.sh", "db", "3306",
-      "./packages/syncing-server/wait-for.sh", "cache", "6379",
-      "./packages/syncing-server/wait-for.sh", "localstack", "4566",
-      "./packages/syncing-server/docker/entrypoint.sh", "start-web"
+      "./wait-for.sh", "db", "3306",
+      "./wait-for.sh", "cache", "6379",
+      "./wait-for.sh", "localstack", "4566",
+      "./docker/entrypoint.sh", "start-web"
     ]
     env_file: .env
     environment:
@@ -29,10 +29,10 @@ services:
       - cache
       - syncing-server-js
     entrypoint: [
-      "./packages/syncing-server/wait-for.sh", "db", "3306",
-      "./packages/syncing-server/wait-for.sh", "cache", "6379",
-      "./packages/syncing-server/wait-for.sh", "syncing-server-js", "3000",
-      "./packages/syncing-server/docker/entrypoint.sh", "start-worker"
+      "./wait-for.sh", "db", "3306",
+      "./wait-for.sh", "cache", "6379",
+      "./wait-for.sh", "syncing-server-js", "3000",
+      "./docker/entrypoint.sh", "start-worker"
     ]
     env_file: .env
     environment:
@@ -59,11 +59,11 @@ services:
       REDIS_URL: '${REDIS_URL}'
       FILES_SERVER_URL: '${FILES_SERVER_URL}'
     entrypoint: [
-      "./packages/api-gateway/wait-for.sh", "auth", "3000",
-      "./packages/api-gateway/wait-for.sh", "syncing-server-js", "3000",
-      "./packages/api-gateway/wait-for.sh", "files", "3000",
-      "./packages/api-gateway/wait-for.sh", "revisions", "3000",
-      "./packages/api-gateway/docker/entrypoint.sh", "start-web"
+      "./wait-for.sh", "auth", "3000",
+      "./wait-for.sh", "syncing-server-js", "3000",
+      "./wait-for.sh", "files", "3000",
+      "./wait-for.sh", "revisions", "3000",
+      "./docker/entrypoint.sh", "start-web"
     ]
     restart: on-failure
     networks:
@@ -77,11 +77,11 @@ services:
       - cache
       - syncing-server-js
     entrypoint: [
-      "./packages/auth/wait-for.sh", "db", "3306",
-      "./packages/auth/wait-for.sh", "cache", "6379",
-      "./packages/auth/wait-for.sh", "localstack", "4566",
-      "./packages/auth/wait-for.sh", "syncing-server-js", "3000",
-      "./packages/auth/docker/entrypoint.sh", "start-web"
+      "./wait-for.sh", "db", "3306",
+      "./wait-for.sh", "cache", "6379",
+      "./wait-for.sh", "localstack", "4566",
+      "./wait-for.sh", "syncing-server-js", "3000",
+      "./docker/entrypoint.sh", "start-web"
     ]
     env_file: docker/auth.env
     environment:
@@ -108,10 +108,10 @@ services:
       - cache
       - auth
     entrypoint: [
-      "./packages/auth/wait-for.sh", "db", "3306",
-      "./packages/auth/wait-for.sh", "cache", "6379",
-      "./packages/auth/wait-for.sh", "auth", "3000",
-      "./packages/auth/docker/entrypoint.sh", "start-worker"
+      "./wait-for.sh", "db", "3306",
+      "./wait-for.sh", "cache", "6379",
+      "./wait-for.sh", "auth", "3000",
+      "./docker/entrypoint.sh", "start-worker"
     ]
     env_file: docker/auth.env
     environment:
@@ -134,10 +134,10 @@ services:
     image: standardnotes/files:${FILES_IMAGE_TAG}
     container_name: files-self-hosted
     entrypoint: [
-      "./packages/files/wait-for.sh", "db", "3306",
-      "./packages/files/wait-for.sh", "cache", "6379",
-      "./packages/files/wait-for.sh", "localstack", "4566",
-      "./packages/files/docker/entrypoint.sh", "start-web"
+      "./wait-for.sh", "db", "3306",
+      "./wait-for.sh", "cache", "6379",
+      "./wait-for.sh", "localstack", "4566",
+      "./docker/entrypoint.sh", "start-web"
     ]
     ports:
       - ${EXPOSED_FILES_PORT}:3000
@@ -157,9 +157,9 @@ services:
     depends_on:
       - files
     entrypoint: [
-      "./packages/files/wait-for.sh", "files", "3000",
-      "./packages/files/wait-for.sh", "localstack", "4566",
-      "./packages/files/docker/entrypoint.sh", "start-worker"
+      "./wait-for.sh", "files", "3000",
+      "./wait-for.sh", "localstack", "4566",
+      "./docker/entrypoint.sh", "start-worker"
     ]
     env_file: docker/files.env
     environment:
@@ -175,10 +175,10 @@ services:
     image: standardnotes/revisions:${REVISIONS_IMAGE_TAG}
     container_name: revisions-self-hosted
     entrypoint: [
-      "./packages/revisions/wait-for.sh", "syncing-server-js", "3000",
-      "./packages/revisions/wait-for.sh", "revisions-db", "3306",
-      "./packages/revisions/wait-for.sh", "localstack", "4566",
-      "./packages/revisions/docker/entrypoint.sh", "start-web"
+      "./wait-for.sh", "syncing-server-js", "3000",
+      "./wait-for.sh", "revisions-db", "3306",
+      "./wait-for.sh", "localstack", "4566",
+      "./docker/entrypoint.sh", "start-web"
     ]
     env_file: docker/revisions.env
     environment:
@@ -199,8 +199,8 @@ services:
     image: standardnotes/revisions:${REVISIONS_IMAGE_TAG}
     container_name: revisions-worker-self-hosted
     entrypoint: [
-      "./packages/revisions/wait-for.sh", "revisions", "3000",
-      "./packages/revisions/docker/entrypoint.sh", "start-worker"
+      "./wait-for.sh", "revisions", "3000",
+      ".docker/entrypoint.sh", "start-worker"
     ]
     env_file: docker/revisions.env
     environment:
