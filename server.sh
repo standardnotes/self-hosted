@@ -155,6 +155,20 @@ case "$COMMAND" in
 
     echo "Subscription successfully created. Please consider donating if you do not plan on purchasing a subscription."
     ;;
+  'dump-db' )
+    echo "Dumping database to data/mysql/001-db-dump.sql"
+    $DOCKER_COMPOSE_COMMAND exec db sh -c "MYSQL_PWD=\$MYSQL_ROOT_PASSWORD mysqldump -cn -u root \$MYSQL_DATABASE > /var/lib/mysql/001-db-dump.sql"
+    echo "Database dump complete"
+    echo "Creating sql adjustments file to data/revisions-db/002-adjust.sql"
+    echo "ALTER TABLE \`revisions\` ADD COLUMN \`user_uuid\` varchar(36) NULL" > data/revisions-db/002-adjust.sql
+    echo "Creating sql adjustments file complete"
+    echo "Dumping revisions database to data/revisions-db/003-revisions-dump.sql"
+    $DOCKER_COMPOSE_COMMAND exec revisions-db sh -c "MYSQL_PWD=\$MYSQL_ROOT_PASSWORD mysqldump -ctn -u root --ignore-table=\$MYSQL_DATABASE.migrations \$MYSQL_DATABASE > /var/lib/mysql/003-revisions-dump.sql"
+    echo "Revisions Database dump complete"
+    echo "Creating sql revisions ownership file to data/revisions-db/004-revisions-ownership.sql"
+    echo "UPDATE revisions r SET r.user_uuid=(SELECT i.user_uuid FROM items i WHERE i.uuid = r.item_uuid LIMIT 1)" > data/revisions-db/004-revisions-ownership.sql
+    echo "Creating sql revisions ownership file complete"
+    ;;
   'stop' )
     echo "Stopping all service"
     $DOCKER_COMPOSE_COMMAND kill --remove-orphans
