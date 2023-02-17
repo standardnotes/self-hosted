@@ -200,7 +200,7 @@ services:
     container_name: revisions-worker-self-hosted
     entrypoint: [
       "./wait-for.sh", "revisions", "3000",
-      ".docker/entrypoint.sh", "start-worker"
+      "./docker/entrypoint.sh", "start-worker"
     ]
     env_file: docker/revisions.env
     environment:
